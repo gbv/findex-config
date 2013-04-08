@@ -1,0 +1,62 @@
+import org.marc4j.marc.Record;
+import org.marc4j.marc.ControlField;
+import org.marc4j.marc.Subfield;
+import org.marc4j.marc.DataField;
+
+Set getPPNLinks(Record record)
+    {
+
+        Set result = new LinkedHashSet();
+
+        List fields = record.getDataFields();
+        for (DataField field : fields)
+        {
+          List sf = field.getSubfields('w');
+          Iterator i = sf.iterator();
+          while (i.hasNext()) {
+            Subfield ppnlink = (Subfield)i.next();
+            String ppn = ppnlink.getData();
+            ppn = ppn.toUpperCase().replaceAll("\\(DE-\\d{3}\\)", "");
+            result.add(ppn);
+          }
+        }
+        return result;
+    }
+/*
+    public Set<String> getPPNLink(final Record record) throws Exception {
+        Set<String> result = new LinkedHashSet<String>();
+        DataField link;
+        link = (DataField)record.getVariableField("773");
+        if(link != null) {
+        if(link.getSubfield('w').getData() != null) {
+          String ppnf = link.getSubfield('w').getData();
+          String ppn = ppnf.substring(0,9);
+          DataField collection;
+          collection = (DataField)record.getVariableField("084");
+          String coll = collection.getSubfield('a').getData();
+          result.add(makeIdPrefix(coll) + "@" + ppn);
+        }
+        }
+        return result;
+    }
+*/
+
+Set getNormLinks(Record record)
+    {
+
+        Set result = new LinkedHashSet();
+
+        List fields = record.getDataFields();
+        for (DataField field : fields)
+        {
+          List sf = field.getSubfields('0');
+          Iterator i = sf.iterator();
+          while (i.hasNext()) {
+            Subfield ppnlink = (Subfield)i.next();
+            String ppn = ppnlink.getData();
+            ppn = ppn.toUpperCase().replaceAll("\\(DE-\\d{3}\\)", "");
+            result.add(ppn);
+          }
+        }
+        return result;
+    }

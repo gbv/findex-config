@@ -1,0 +1,63 @@
+import org.marc4j.marc.Record;
+import org.marc4j.marc.ControlField;
+import org.marc4j.marc.Subfield;
+import org.marc4j.marc.DataField;
+
+// define the base level indexer so that its methods can be called from the script.
+// note that the SolrIndexer code will set this value before the script methods are called.
+org.solrmarc.index.SolrIndexer indexer = null;
+
+/**
+ * Extract the call number label from a record
+ * @param record
+ * @return Call number label
+ */
+public Set getBkl(Record record) {
+    LinkedHashSet resultSet = new LinkedHashSet();
+    List fields = record.getVariableFields("084");
+    Iterator it = fields.iterator();
+
+    while (it.hasNext()) {
+        DataField field = (DataField)it.next();
+        Subfield type = field.getSubfield('2');
+        Subfield value = field.getSubfield('a');
+        if (type != null && type.getData().contains("bcl") == true) {
+            resultSet.add(value.getData());
+        }
+    }
+    return resultSet;
+}
+
+public Set getBklNumber(Record record) {
+    LinkedHashSet resultSet = new LinkedHashSet();
+    List fields = record.getVariableFields("084");
+    Iterator it = fields.iterator();
+
+    while (it.hasNext()) {
+        DataField field = (DataField)it.next();
+        Subfield type = field.getSubfield('2');
+        Subfield value = field.getSubfield('a');
+        if (type != null && type.getData().contains("bcl") == true) {
+            resultSet.add(value.getData());
+        }
+    }
+    return resultSet;
+}
+
+public Set getBklName(Record record) {
+    LinkedHashSet resultSet = new LinkedHashSet();
+    List fields = record.getVariableFields("084");
+    Iterator it = fields.iterator();
+
+    while (it.hasNext()) {
+        DataField field = (DataField)it.next();
+        Subfield type = field.getSubfield('2');
+        Subfield value = field.getSubfield('9');
+        if (type != null && value != null) {
+            if (type != null && type.getData().contains("bcl") == true) {
+                resultSet.add(value.getData());
+            }
+        }
+    }
+    return resultSet;
+}

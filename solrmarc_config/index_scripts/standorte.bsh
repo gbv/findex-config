@@ -1,0 +1,120 @@
+import org.marc4j.marc.Record;
+import org.marc4j.marc.ControlField;
+import org.marc4j.marc.Subfield;
+import org.marc4j.marc.DataField;
+
+org.solrmarc.index.SolrIndexer indexer = null;
+
+/**
+ * Standort-Code aus Abrufzeichen in 954$y extrahieren
+ *
+ * @param  Record          record
+ * @return Set     format of record
+ */
+public Set getStandort(Record record){
+    Set result = new LinkedHashSet();
+    String location = "";
+
+    List holdings = record.getVariableFields("980");
+    Iterator fieldsIter = holdings.iterator();
+    if (holdings != null) {
+        DataField holdingField;
+        while(fieldsIter.hasNext()) {
+             String holding = "";
+             holdingField = (DataField) fieldsIter.next();
+             if (holdingField != null) {
+                 if (holdingField.getSubfield('2') != null) {
+                     holding = holdingField.getSubfield('2').getData();
+                 }
+                 if (holdingField.getSubfield('y') != null) {
+                     location = holdingField.getSubfield('y').getData();
+                     if (location.length() >= 2) {
+                         holding = holding + ":" + location.charAt(1);
+                     }
+                 }
+                 result.add(holding);
+             }
+        }
+    }
+    return result;
+}
+
+public Set getSelectKey(Record record) {
+    Set result = new LinkedHashSet();
+    String location = "";
+
+    List holdings = record.getVariableFields("980");
+    Iterator fieldsIter = holdings.iterator();
+    if (holdings != null) {
+        DataField holdingField;
+        while(fieldsIter.hasNext()) {
+             String holding = "";
+             holdingField = (DataField) fieldsIter.next();
+             if (holdingField != null) {
+                 if (holdingField.getSubfield('2') != null) {
+                     holding = holdingField.getSubfield('2').getData();
+                 }
+                 if (holdingField.getSubfield('y') != null) {
+                     location = holdingField.getSubfield('y').getData();
+                     if (location.length() >= 1) {
+                         holding = holding + ":" + location.charAt(0);
+                     }
+                 }
+                 result.add(holding);
+             }
+        }
+    }
+    return result;
+}
+
+public Set getAusleihindikator(Record record) {
+    Set result = new LinkedHashSet();
+    String location = "";
+
+    List holdings = record.getVariableFields("980");
+    Iterator fieldsIter = holdings.iterator();
+    if (holdings != null) {
+        DataField holdingField;
+        while(fieldsIter.hasNext()) {
+             String holding = "";
+             holdingField = (DataField) fieldsIter.next();
+             if (holdingField != null) {
+                 if (holdingField.getSubfield('2') != null) {
+                     holding = holdingField.getSubfield('2').getData();
+                 }
+                 if (holdingField.getSubfield('e') != null) {
+                     location = holdingField.getSubfield('e').getData();
+                     holding = holding + ":" + location.charAt(0);
+                 }
+                 result.add(holding);
+             }
+        }
+    }
+    return result;
+}
+
+public Set getSignaturILN(Record record){
+    Set result = new LinkedHashSet();
+    String location = "";
+
+    List holdings = record.getVariableFields("980");
+    Iterator fieldsIter = holdings.iterator();
+    if (holdings != null) {
+        DataField holdingField;
+        while(fieldsIter.hasNext()) {
+             String holding = "";
+             holdingField = (DataField) fieldsIter.next();
+             if (holdingField != null) {
+                 if (holdingField.getSubfield('2') != null) {
+                     holding = holdingField.getSubfield('2').getData();
+                 }
+                 if (holdingField.getSubfield('d') != null) {
+                     location = holdingField.getSubfield('d').getData();
+                     holding = holding + ":" + location;
+                 }
+                 result.add(holding);
+             }
+        }
+    }
+    return result;
+}
