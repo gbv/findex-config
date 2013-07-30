@@ -1,0 +1,710 @@
+import org.marc4j.marc.Record;
+import org.marc4j.marc.ControlField;
+import org.marc4j.marc.Subfield;
+import org.marc4j.marc.DataField;
+
+org.solrmarc.index.SolrIndexer indexer = null;
+
+/**
+ * Determine Record Format(s)
+ *
+ * @param  Record          record
+ * @return Set     format of record
+ */
+public Set getFormat(Record record){
+    Set result = new LinkedHashSet();
+	String leader = record.getLeader().toString();
+	char leaderBit;
+	ControlField fixedField = (ControlField) record.getVariableField("008");
+	DataField title = (DataField) record.getVariableField("245");
+	char formatCode = ' ';
+
+	// check if there's an h in the 245
+	if (title != null) {
+	    if (title.getSubfield('h') != null){
+	        if (title.getSubfield('h').getData().toLowerCase().contains("[electronic resource]")) {
+	    		result.add("Online Resource");
+//	    		return result;
+	        }
+	        else if (title.getSubfield('h').getData().toLowerCase().contains("[internet-ressource]")) {
+	    		result.add("Online Resource");
+//	    		return result;
+	        }
+    	}
+    }
+
+    // check the 007 - this is a repeating field
+    List fields = record.getVariableFields("007");
+    Iterator fieldsIter = fields.iterator();
+    if (fields != null) {
+        ControlField formatField;
+        String formatFieldStr = "";
+        while(fieldsIter.hasNext()) {
+            formatField = (ControlField) fieldsIter.next();
+            formatFieldStr = formatField.getData();
+            formatCode = formatField.getData().toUpperCase().charAt(0);
+    	    switch (formatCode) {
+                case 'A':
+                    if (formatFieldStr.length() >= 2) {
+                    switch(formatField.getData().toUpperCase().charAt(1)) {
+                        case 'D':
+                            result.add("Atlas");
+                            break;
+                        default:
+                            result.add("Map");
+                            break;
+                    }
+                    }
+                    break;
+                case 'C':
+                    if (formatFieldStr.length() >= 2) {
+                    switch(formatField.getData().toUpperCase().charAt(1)) {
+                        case 'A':
+                            result.add("TapeCartridge");
+                            break;
+                        case 'B':
+                            result.add("ChipCartridge");
+                            break;
+                        case 'C':
+                            result.add("DiscCartridge");
+                            break;
+                        case 'F':
+                            result.add("TapeCassette");
+                            break;
+                        case 'H':
+                            result.add("TapeReel");
+                            break;
+                        case 'J':
+                            result.add("FloppyDisk");
+                            break;
+                        case 'M':
+                        case 'O':
+                            result.add("CDROM");
+                            break;
+                        case 'R':
+                            // Do not return - this will cause anything with an
+                            // 856 field to be labeled as "Electronic"
+                            break;
+                        default:
+                            result.add("Data Media");
+                            break;
+                    }
+                    }
+                    break;
+                case 'D':
+                    result.add("Globe");
+                    break;
+                case 'F':
+                    result.add("Braille");
+                    break;
+                case 'G':
+                    if (formatFieldStr.length() >= 2) {
+                    switch(formatField.getData().toUpperCase().charAt(1)) {
+                        case 'C':
+                        case 'D':
+                            result.add("Filmstrip");
+                            break;
+                        case 'T':
+                            result.add("Transparency");
+                            break;
+                        default:
+                            result.add("Slide");
+                            break;
+                    }
+                    }
+                    break;
+                case 'H':
+                    result.add("Microform");
+                    break;
+                case 'K':
+                    if (formatFieldStr.length() >= 2) {
+                    switch(formatField.getData().toUpperCase().charAt(1)) {
+                        case 'C':
+                            result.add("Collage");
+                            break;
+                        case 'D':
+                            result.add("Drawing");
+                            break;
+                        case 'E':
+                            result.add("Painting");
+                            break;
+                        case 'F':
+                            result.add("Print");
+                            break;
+                        case 'G':
+                            result.add("Photonegative");
+                            break;
+                        case 'J':
+                            result.add("Print");
+                            break;
+                        case 'L':
+                            result.add("Drawing");
+                            break;
+                        case 'O':
+                            result.add("FlashCard");
+                            break;
+                        case 'N':
+                            result.add("Chart");
+                            break;
+                        default:
+                            result.add("Picture");
+                            break;
+                    }
+                    }
+                    break;
+                case 'M':
+                    if (formatFieldStr.length() >= 2) {
+                    switch(formatField.getData().toUpperCase().charAt(1)) {
+                        case 'F':
+                            result.add("VideoCassette");
+                            break;
+                        case 'R':
+                            result.add("Filmstrip");
+                            break;
+                        default:
+                            result.add("MotionPicture");
+                            break;
+                    }
+                    }
+                    break;
+                case 'O':
+                    result.add("Kit");
+                    break;
+                case 'Q':
+                    result.add("Musical Score");
+                    break;
+                case 'R':
+                    result.add("SensorImage");
+                    break;
+                case 'S':
+                    if (formatFieldStr.length() >= 2) {
+                    switch(formatField.getData().toUpperCase().charAt(1)) {
+                        case 'D':
+                            result.add("Sound Disc");
+                            break;
+                        case 'S':
+                            result.add("Sound Cassette");
+                            break;
+                        default:
+                            result.add("Sound Recording");
+                            break;
+                    }
+                    }
+                    break;
+                case 'V':
+                    if (formatFieldStr.length() >= 2) {
+                    switch(formatField.getData().toUpperCase().charAt(1)) {
+                        case 'C':
+                            result.add("VideoCartridge");
+                            break;
+                        case 'D':
+                            result.add("VideoDisc");
+                            break;
+                        case 'F':
+                            result.add("VideoCassette");
+                            break;
+                        case 'R':
+                            result.add("VideoReel");
+                            break;
+                        default:
+                            result.add("Video");
+                            break;
+                    }
+                    }
+                    break;
+        	}
+        }
+    	if (!result.isEmpty()) {
+ //           return result;
+        }
+    }
+
+    // check the Leader at position 6
+    leaderBit = leader.charAt(6);
+    switch (Character.toUpperCase(leaderBit)) {
+        case 'C':
+        case 'D':
+            result.add("Musical Score");
+            break;
+        case 'E':
+        case 'F':
+            result.add("Map");
+            break;
+        case 'G':
+            result.add("Slide");
+            break;
+        case 'I':
+            result.add("Sound Recording");
+            break;
+        case 'J':
+            result.add("Music Recording");
+            break;
+        case 'K':
+            result.add("Picture");
+            break;
+        case 'M':
+            result.add("Online Resource");
+            break;
+        case 'O':
+        case 'P':
+            result.add("Kit");
+            break;
+        case 'R':
+            result.add("Physical Object");
+            break;
+        case 'T':
+            result.add("Manuscript");
+            break;
+    }
+	if (!result.isEmpty()) {
+//        return result;
+    }
+
+    // check the Leader at position 7
+
+
+// wenn nicht serial -> buch!
+    leaderBit = leader.charAt(7);
+    switch (Character.toUpperCase(leaderBit)) {
+        // Monograph
+        case 'M':
+            if (formatCode == 'C') {
+                result.add("eBook");
+            } else {
+                result.add("Book");
+            }
+            break;
+        // Serial
+        case 'S':
+            // Look in 008 to determine what type of Continuing Resource
+            formatCode = fixedField.getData().toUpperCase().charAt(21);
+            switch (formatCode) {
+                case 'N':
+                    result.add("Newspaper");
+                    break;
+                case 'P':
+                    result.add("Journal");
+                    break;
+                default:
+                    result.add("Serial");
+                    break;
+            }
+        default:
+// wenn bisher nichts zutrifft, mach ein Buch draus (Besprechung mit Reiner, 19.05.10)
+            if(result.isEmpty()) {
+              if (formatCode == 'C') {
+                result.add("eBook");
+              } else {
+                result.add("Book");
+              }
+            }
+    }
+
+    // Nothing worked!
+	if (result.isEmpty()) {
+        result.add("Unknown");
+    }
+
+    if ((result.contains("Journal")) && (result.contains("Online Resource"))) {
+        result.add("eJournal");
+    }
+    
+    return result;
+}
+Set getJournalTitle(Record record) {
+  Set result = new LinkedHashSet();
+  format = getFormat(record);
+  if (format.contains("Journal")) {
+    List othertitles = record.getVariableFields("246");
+    Iterator i = othertitles.iterator();
+    while (i.hasNext()) {
+      DataField othertitle = (DataField)i.next();
+      result.add(othertitle.getSubfield('a').getData());
+    }
+    DataField title = (DataField) record.getVariableField("245");
+    if (title != null) {
+      if(title.getSubfield('a') != null) {
+        result.add(title.getSubfield('a').getData());
+      }
+    
+      if(title.getSubfield('b') != null) {
+        result.add(title.getSubfield('b').getData());
+      } 
+    }
+  }
+  return result;
+}
+
+
+public String getFormatVZG(Record record) {
+  String leader = record.getLeader().toString();
+  leaderBit6 = leader.charAt(6);
+  leaderBit7 = leader.charAt(7);
+  List fields = record.getVariableFields("007");
+  Iterator fieldsIter = fields.iterator();
+
+  List field902 = record.getVariableFields("951");
+  Iterator field902Iter = field902.iterator();
+
+  if (field902 != null) {
+    while (field902Iter.hasNext()) {
+      fField = (DataField) field902Iter.next();
+      if (fField.getSubfield('a') != null) {
+        if (fField.getSubfield('a').getData().equals("MC")) {
+          return "Bücher";
+          break;
+        }
+      }
+    }
+  }
+
+  if (fields != null) {
+    while (fieldsIter.hasNext()) {
+      fField = (ControlField) fieldsIter.next();
+      fCode = fField.getData().toUpperCase().charAt(0);
+        if (fCode == 'V') {
+          return "Filme";
+          break;
+        }
+        else if (fCode == 'H' && Character.toUpperCase(leaderBit7) != 'S') {
+          return "Mikroformen";
+          break;
+        }
+    }
+  }
+
+  switch (Character.toUpperCase(leaderBit6)) {
+
+    case 'A':
+      switch (Character.toUpperCase(leaderBit7)) {
+        case 'M':
+          return "Bücher";
+          break;
+        case 'B':
+          return "Zeitschriftenbände";
+          break;
+        case 'S':
+          return "Zeitschriften";
+          break;
+        // sepc sagt S für Aufsätze?!? -> Fehler?
+        case 'A':
+          if (field902 != null) {
+            Iterator field902Iter = field902.iterator();
+            while (field902Iter.hasNext()) {
+              fField = (DataField) field902Iter.next();
+              if (fField.getSubfield('a') != null) {
+                if (fField.getSubfield('a').getData().equals("MC")) {
+                  return "Bücher";
+                  break;
+                }
+              }
+            }
+          }
+          return "Aufsätze";
+          break;
+        default:
+          return "unbekannt";
+          break;
+      }
+      break;
+
+    case 'M':
+      switch (Character.toUpperCase(leaderBit7)) {
+         case 'M':
+         case 'B':
+           if (fields != null) {
+              while (fieldsIter.hasNext()) {
+                fField = (ControlField) fieldsIter.next();
+                if(fField.getData().length() > 1) {
+                  fCode = fField.getData().toUpperCase().charAt(1);
+                  if (fCode == 'R') {
+                    return "Elektronische Bücher";
+                    break;
+                  }
+                  else if (fCode == 'U') {
+                    return "Datenträger";
+                    break;
+                  }
+                }
+              }
+            }
+           return "Elektronische Ressource";
+           break;
+         case 'S':
+           return "Elektronische Zeitschriften";
+           break;
+         case 'A':
+           return "Elektronische Aufsätze";
+           break;
+         default:
+           return "unbekannt";
+           break;
+       }
+       break;
+ 
+    case 'E':
+       return "Karten";
+       break;
+
+    case 'D':
+    case 'F':
+    case 'T':
+      return "Handschriften";
+      break;
+ 
+    case 'I':
+    case 'J':
+       return "Tonträger";
+       break;
+
+    case 'R':
+      return "Spiele / Objekte";
+      break;
+
+    case 'C':
+      return "Noten";
+      break;
+
+  /*  case 'G':
+      // 007 prüfen
+      return "Mikroformen";
+      break; */
+  }
+
+  if (fields != null) {
+    while (fieldsIter.hasNext()) {
+      fField = (ControlField) fieldsIter.next();
+      fCode = fField.getData().toUpperCase().charAt(0);
+        if (fCode == 'V') {
+          return "Filme";
+          break;
+        }
+        else if (fCode == 'H' && leaderBit7 != 'S') {
+          return "Mikroformen";
+          break;
+        }
+    }
+  }
+
+  return "unbekannt";
+
+}
+
+public Set getFormatFacetVZG(Record record) {
+  
+  Set result = new LinkedHashSet();
+
+  String format = getFormatVZG(record);
+
+  result.add(format);
+
+  if (format == "Elektronische Bücher") {
+    result.add("Bücher");
+  }
+
+  if (format == "Elektronische Zeitschriften") {
+      result.add("Zeitschriften");
+  }
+
+  if (format == "Elektronische Aufsätze") {
+      result.add("Aufsätze");
+  }
+
+  if ((format == "Elektronische Bücher") || (format == "Elektronische Zeitschriften") || (format == "Elektronische Aufsätze") || (format == "Datenträger")) {
+    result.add("Elektronische Ressource");
+  }
+
+  if (format == "Bücher") {
+    result.add("Gedruckte Bücher");
+  }
+
+  if (format == "Aufsätze") {
+    result.add("Gedruckte Aufsätze");
+  }
+
+  if (format == "Zeitschriften") {
+    result.add("Gedruckte Zeitschriften");
+  }
+
+  f502 = record.getVariableField("502");
+  if(f502 != null) {
+    result.add("Hochschulschriften");
+  }
+
+  return result;
+}
+
+public String getFormatVZGEng(Record record) {
+  String leader = record.getLeader().toString();
+  leaderBit6 = leader.charAt(6);
+  leaderBit7 = leader.charAt(7);
+  List fields = record.getVariableFields("007");
+  Iterator fieldsIter = fields.iterator();
+
+  List field902 = record.getVariableFields("951");
+  Iterator field902Iter = field902.iterator();
+
+  if (field902 != null) {
+    while (field902Iter.hasNext()) {
+      fField = (DataField) field902Iter.next();
+      if (fField.getSubfield('a') != null) {
+        if (fField.getSubfield('a').getData().equals("MC")) {
+          return "Book";
+          break;
+        }
+      }
+    }
+  }
+
+  if (fields != null) {
+    while (fieldsIter.hasNext()) {
+      fField = (ControlField) fieldsIter.next();
+      fCode = fField.getData().toUpperCase().charAt(0);
+        if (fCode == 'V') {
+          return "Motion Picture";
+          break;
+        }
+        else if (fCode == 'H' && Character.toUpperCase(leaderBit7) != 'S') {
+          return "Microform";
+          break;
+        }
+    }
+  }
+
+  switch (Character.toUpperCase(leaderBit6)) {
+
+    case 'A':
+      switch (Character.toUpperCase(leaderBit7)) {
+        case 'M':
+          return "Book";
+          break;
+        case 'B':
+          return "Serial Volume";
+          break;
+        case 'S':
+          return "Journal";
+          break;
+        // sepc sagt S für Aufsätze?!? -> Fehler?
+        case 'A':
+          if (field902 != null) {
+            Iterator field902Iter = field902.iterator();
+            while (field902Iter.hasNext()) {
+              fField = (DataField) field902Iter.next();
+              if (fField.getSubfield('v') != null) {
+                if (fField.getSubfield('v').getData().equals("Enth")) {
+                  return "Book";
+                  break;
+                }
+              }
+            }
+          }
+          return "Article";
+          break;
+        default:
+          return "unknown";
+          break;
+      }
+      break;
+
+    case 'M':
+      switch (Character.toUpperCase(leaderBit7)) {
+         case 'M':
+         case 'B':
+           if (fields != null) {
+              while (fieldsIter.hasNext()) {
+                fField = (ControlField) fieldsIter.next();
+                if(fField.getData().length() > 1) {
+                  fCode = fField.getData().toUpperCase().charAt(1);
+                  if (fCode == 'R') {
+                    return "eBook";
+                    break;
+                  }
+                  else if (fCode == 'U') {
+                    return "Data Media";
+                    break;
+                  }
+                }
+              }
+            }
+           return "electronic Resource";
+           break;
+         case 'S':
+           return "eJournal";
+           break;
+         case 'A':
+           return "electronic Article";
+           break;
+         default:
+           return "unknown";
+           break;
+       }
+       break;
+ 
+    case 'E':
+       return "Map";
+       break;
+
+    case 'D':
+    case 'F':
+    case 'T':
+      return "Manuscript";
+      break;
+ 
+    case 'I':
+    case 'J':
+       return "Sound Recording";
+       break;
+
+    case 'R':
+      return "Game";
+      break;
+
+    case 'C':
+      return "Musical Score";
+      break;
+
+  /*  case 'G':
+      // 007 prüfen
+      return "Mikroformen";
+      break; */
+  }
+
+  if (fields != null) {
+    while (fieldsIter.hasNext()) {
+      fField = (ControlField) fieldsIter.next();
+      fCode = fField.getData().toUpperCase().charAt(0);
+        if (fCode == 'V') {
+          return "Motion Picture";
+          break;
+        }
+        else if (fCode == 'H' && Character.toUpperCase(leaderBit7) != 'S') {
+          return "Microform";
+          break;
+        }
+    }
+  }
+
+  return "unknown";
+
+}
+
+public String remote(Record record)
+{
+    // check the 007 - this is a repeating field
+    List fields = record.getVariableFields("007");
+    Iterator fieldsIter = fields.iterator();
+    if (fields != null) {
+        ControlField formatField;
+        String formatFieldStr = "";
+        while(fieldsIter.hasNext()) {
+            formatField = (ControlField) fieldsIter.next();
+            char formatCode = formatField.getData().toUpperCase().charAt(0);
+            char formatCode2 = formatField.getData().toUpperCase().charAt(1);
+System.out.println("remote: " + formatCode + formatCode2);
+            if (formatCode == 'C' && formatCode2 == 'R') {
+                return "true";
+            }
+        }
+    }
+    return "false";
+}
