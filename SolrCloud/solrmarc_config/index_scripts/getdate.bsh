@@ -111,7 +111,7 @@ public String cleanDate(String date)
  * @param record - the marc record object
  * @return 260c, "cleaned" per org.solrmarc.tools.Utils.cleanDate()
  */
-public String getDate(Record record)
+/*public String getDate(Record record)
 {
     Set result = SolrIndexer.getFieldList(record, "260c");
     String date = org.solrmarc.tools.Utils.join(result, ", ");
@@ -135,4 +135,15 @@ public String getDate(Record record)
     if (date == null || date.length() == 0)
         return (null);
     return cleanDate(date);
+} */
+
+public String getDate(Record record)
+{
+    ControlField fixedField = (ControlField) record.getVariableField("008");
+    String date = fixedField.getData().substring(7,11);
+    if (date.matches("\\d\\d\\d\\d")) {
+        int num = Integer.parseInt(date);
+        if (num < 2050 && num > 1000) return date;
+    }
+    return (null);
 }

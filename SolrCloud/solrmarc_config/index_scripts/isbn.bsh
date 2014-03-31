@@ -17,7 +17,7 @@ Set getISBN1013(Record record) {
                 if (isbnfield.getSubfield('a') != null) {
                     String isbn = isbnfield.getSubfield('a').getData();
                     String isbnclean = isbn.replaceAll("\\s+.*$", "");
-                    String isbnnum = isbnclean.replaceAll("[^0-9x]", "");
+                    String isbnnum = isbnclean.replaceAll("[^0-9Xx]", "");
                     result.add(isbnnum);
                     if (isbnnum.length()==10) {
                         result.add(ISBN1013(isbnnum));

@@ -17,7 +17,7 @@
 -->
 
 <config>
-  <luceneMatchVersion>4.4</luceneMatchVersion>
+  <luceneMatchVersion>4.6</luceneMatchVersion>
   <!-- Set this to 'false' if you want solr to continue working after it has 
        encountered an severe configuration error.  In a production environment, 
        you may want solr to keep working even if one handler is mis-configured.
@@ -47,6 +47,11 @@
   -->
   <jmx />
 
+  <indexConfig>
+    <maxIndexingThreads>12</maxIndexingThreads>
+    <nrtMode>true</nrtMode>
+  </indexConfig>
+
   <!-- the default high-performance update handler -->
   <updateHandler class="solr.DirectUpdateHandler2">
 
@@ -68,8 +73,8 @@
          maxTime - oldest uncommited update (in ms) is this long ago
     -->
     <autoCommit> 
-      <maxDocs>1000000</maxDocs>
-      <maxTime>800000000</maxTime>
+      <maxDocs>500000</maxDocs>
+      <maxTime>600000</maxTime>
       <openSearcher>false</openSearcher>
     </autoCommit>
 
@@ -124,7 +129,7 @@
          -->
     <filterCache
       class="solr.FastLRUCache"
-      size="3000"
+      size="500"
       initialSize="300"
       autowarmCount="50"/>
 
@@ -133,28 +138,28 @@
          of documents requested.  -->
     <queryResultCache
       class="solr.LRUCache"
-      size="1000"
-      initialSize="100"
-      autowarmCount="50"/>
+      size="500"
+      initialSize="500"
+      autowarmCount="0"/>
 
   <!-- documentCache caches Lucene Document objects (the stored fields for each document).
        Since Lucene internal document ids are transient, this cache will not be autowarmed.  -->
     <documentCache
       class="solr.LRUCache"
-      size="10000"
-      initialSize="5000"
-      autowarmCount="1000"/>
+      size="500"
+      initialSize="500"
+      autowarmCount="100"/>
 
    <!-- Cache used to hold field values that are quickly accessible 
          by document id.  The fieldValueCache is created by default 
          even if not configured here. 
     --> 
-      <fieldValueCache 
+<!--      <fieldValueCache 
         class="solr.FastLRUCache" 
         size="512" 
         autowarmCount="10" 
         showItems="32" 
-      /> 
+      /> -->
 
     <!-- If true, stored fields that are not requested will be loaded lazily.
 
@@ -193,7 +198,7 @@
          requests matching documents 10 through 19, and queryWindowSize is 50,
          then documents 0 through 49 will be collected and cached.  Any further
          requests in that range can be satisfied via the cache.  -->
-    <queryResultWindowSize>50</queryResultWindowSize>
+    <queryResultWindowSize>60</queryResultWindowSize>
     
     <!-- Maximum number of documents to cache for any entry in the
          queryResultCache. -->
@@ -312,6 +317,7 @@
      <str name="spellcheck.extendedResults">true</str>
      <str name="spellcheck.onlyMorePopular">true</str>
      <str name="spellcheck.count">20</str>
+     <str name="timeAllowed">4000</str>
     </lst>
     <arr name="last-components">
       <str>spellcheck</str>
@@ -333,6 +339,7 @@
      <str name="spellcheck.extendedResults">true</str>
      <str name="spellcheck.onlyMorePopular">true</str>
      <str name="spellcheck.count">20</str>
+     <str name="timeAllowed">4000</str>
     </lst>
     <arr name="last-components">
       <str>spellcheck</str>
@@ -346,6 +353,7 @@
      <str name="spellcheck.extendedResults">true</str>
      <str name="spellcheck.onlyMorePopular">true</str>
      <str name="spellcheck.count">20</str>
+     <str name="timeAllowed">4000</str>
     </lst>
     <arr name="last-components">
       <str>spellcheck</str>
@@ -390,8 +398,8 @@
       <int name="minPrefix">1</int>
       <int name="maxInspections">5</int>
       <int name="minQueryLength">4</int>
-      <float name="maxQueryFrequency">0.01</float>
-      <float name="thresholdTokenFrequency">0.0001</float> 
+      <float name="maxQueryFrequency">10</float>
+      <float name="thresholdTokenFrequency">0.000001</float> 
     </lst>
     <lst name="spellchecker">
       <str name="name">basicSpell</str>
@@ -402,8 +410,8 @@
       <int name="minPrefix">1</int>
       <int name="maxInspections">5</int>
       <int name="minQueryLength">4</int>
-      <float name="maxQueryFrequency">0.01</float>
-      <float name="thresholdTokenFrequency">0.0001</float>
+      <float name="maxQueryFrequency">10</float>
+      <float name="thresholdTokenFrequency">0.000001</float>
     </lst>
   </searchComponent>
   <queryConverter name="queryConverter" class="org.apache.solr.spelling.SpellingQueryConverter"/>
@@ -592,7 +600,7 @@
     
   <!-- config for the admin interface --> 
   <admin>
-    <defaultQuery>shakespeare</defaultQuery>
+    <defaultQuery>*:*</defaultQuery>
     
     <!-- configure a healthcheck file for servers behind a loadbalancer
     <healthcheck type="file">server-enabled</healthcheck>
