@@ -346,19 +346,8 @@ public String getFormatVZG(Record record) {
   List field902 = record.getVariableFields("951");
   Iterator field902Iter = field902.iterator();
 
-  if (field902 != null) {
-    while (field902Iter.hasNext()) {
-      fField = (DataField) field902Iter.next();
-      if (fField.getSubfield('a') != null) {
-        if (fField.getSubfield('a').getData().equals("MC")) {
-          return "Bücher";
-          break;
-        }
-      }
-    }
-  }
-
-  if (fields != null) {
+ if (fields != null) {
+    fieldsIter = fields.iterator();
     while (fieldsIter.hasNext()) {
       fField = (ControlField) fieldsIter.next();
       fCode = fField.getData().toUpperCase().charAt(0);
@@ -372,7 +361,19 @@ public String getFormatVZG(Record record) {
         }
     }
   }
-
+/*
+  if (field902 != null) {
+    while (field902Iter.hasNext()) {
+      fField = (DataField) field902Iter.next();
+      if (fField.getSubfield('a') != null) {
+        if (fField.getSubfield('a').getData().equals("MC")) {
+          return "Bücher";
+          break;
+        }
+      }
+    }
+  }
+*/
   switch (Character.toUpperCase(leaderBit6)) {
 
     case 'A':
@@ -381,6 +382,7 @@ public String getFormatVZG(Record record) {
           return "Bücher";
           break;
         case 'B':
+        case 'D':
           return "Zeitschriftenbände";
           break;
         case 'S':
@@ -413,6 +415,7 @@ public String getFormatVZG(Record record) {
          case 'M':
          case 'B':
            if (fields != null) {
+              fieldsIter = fields.iterator();
               while (fieldsIter.hasNext()) {
                 fField = (ControlField) fieldsIter.next();
                 if(fField.getData().length() > 1) {
@@ -423,6 +426,10 @@ public String getFormatVZG(Record record) {
                   }
                   else if (fCode == 'U') {
                     return "Datenträger";
+                    break;
+                  }
+                  else if (fCode == 'O') {
+                    return "Buch";
                     break;
                   }
                 }
@@ -544,18 +551,6 @@ public String getFormatVZGEng(Record record) {
   List field902 = record.getVariableFields("951");
   Iterator field902Iter = field902.iterator();
 
-  if (field902 != null) {
-    while (field902Iter.hasNext()) {
-      fField = (DataField) field902Iter.next();
-      if (fField.getSubfield('a') != null) {
-        if (fField.getSubfield('a').getData().equals("MC")) {
-          return "Book";
-          break;
-        }
-      }
-    }
-  }
-
   if (fields != null) {
     while (fieldsIter.hasNext()) {
       fField = (ControlField) fieldsIter.next();
@@ -570,7 +565,19 @@ public String getFormatVZGEng(Record record) {
         }
     }
   }
-
+/*
+  if (field902 != null) {
+    while (field902Iter.hasNext()) {
+      fField = (DataField) field902Iter.next();
+      if (fField.getSubfield('a') != null) {
+        if (fField.getSubfield('a').getData().equals("MC")) {
+          return "Book";
+          break;
+        }
+      }
+    }
+  }
+*/
   switch (Character.toUpperCase(leaderBit6)) {
 
     case 'A':
@@ -579,6 +586,7 @@ public String getFormatVZGEng(Record record) {
           return "Book";
           break;
         case 'B':
+        case 'D':
           return "Serial Volume";
           break;
         case 'S':
@@ -611,6 +619,7 @@ public String getFormatVZGEng(Record record) {
          case 'M':
          case 'B':
            if (fields != null) {
+              fieldsIter = fields.iterator();
               while (fieldsIter.hasNext()) {
                 fField = (ControlField) fieldsIter.next();
                 if(fField.getData().length() > 1) {
@@ -621,6 +630,10 @@ public String getFormatVZGEng(Record record) {
                   }
                   else if (fCode == 'U') {
                     return "Data Media";
+                    break;
+                  }
+                  else if (fCode == 'O') {
+                    return "Book";
                     break;
                   }
                 }
@@ -670,6 +683,7 @@ public String getFormatVZGEng(Record record) {
   }
 
   if (fields != null) {
+    fieldsIter = fields.iterator();
     while (fieldsIter.hasNext()) {
       fField = (ControlField) fieldsIter.next();
       fCode = fField.getData().toUpperCase().charAt(0);
@@ -700,11 +714,19 @@ public String remote(Record record)
             formatField = (ControlField) fieldsIter.next();
             char formatCode = formatField.getData().toUpperCase().charAt(0);
             char formatCode2 = formatField.getData().toUpperCase().charAt(1);
-System.out.println("remote: " + formatCode + formatCode2);
             if (formatCode == 'C' && formatCode2 == 'R') {
                 return "true";
             }
         }
+    }
+    return "false";
+}
+
+public String hochschulschrift(Record record)
+{
+    List fields = record.getVariableFields("502");
+    if (!fields.isEmpty()) {
+        return "true";
     }
     return "false";
 }
