@@ -11,6 +11,12 @@
         <filter class="solr.PatternReplaceFilterFactory" pattern="(?&lt;!\b[A-Z])[.\s]*$" replacement="" replace="first"/>
       </analyzer>
     </fieldType>
+    <fieldType name="textFacetRaw" class="solr.TextField" sortMissingLast="true" omitNorms="true">
+      <analyzer>
+        <tokenizer class="solr.KeywordTokenizerFactory"/>
+        <!-- this is just like textFacet but without punctuation stripping. -->
+      </analyzer>
+    </fieldType>
     <fieldType name="text" class="solr.TextField" positionIncrementGap="100">
       <analyzer type="index">
         <charFilter class="solr.MappingCharFilterFactory" mapping="mapping-specials.txt" />
@@ -131,7 +137,7 @@
         <filter class="solr.LengthFilterFactory" min="1" max="100" />
       </analyzer>
     </fieldType>
-    <fieldType name="date" class="solr.DateField" sortMissingLast="true" omitNorms="true"/>
+    <fieldType name="date" class="solr.TrieDateField" sortMissingLast="true" omitNorms="true" precisionStep="6"/>
         <fieldType name="textSound" class="solr.TextField" positionIncrementGap="100">
       <analyzer type="index">
         <tokenizer class="solr.ICUTokenizerFactory"/>
@@ -182,7 +188,7 @@
    <field name="author-letter" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="authorStr" type="string" indexed="true" stored="true"/>
    <field name="title" type="text" indexed="true" stored="true" multiValued="true"/>
-   <field name="title_sort" type="string" indexed="true" stored="true" />
+   <field name="title_sort" type="string" indexed="true" stored="true"/>
    <field name="title_sub" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="title_short" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="title_full" type="text" indexed="true" stored="true" multiValued="true"/>
@@ -192,7 +198,7 @@
    <field name="physical" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="publisher" type="textProper" indexed="true" stored="true" multiValued="true"/>
    <field name="publisherStr" type="string" indexed="true" stored="true" multiValued="true"/>
-   <field name="publishDate" type="string" indexed="true" stored="true" multiValued="true" />
+   <field name="publishDate" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="publishDateSort" type="string" indexed="true" stored="true" docValues="true"/>
    <field name="edition" type="string" indexed="true" stored="true"/>
    <field name="description" type="text" indexed="true" stored="true"/>
@@ -216,8 +222,8 @@
    <field name="dewey-tens" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
    <field name="dewey-ones" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
    <field name="dewey-full" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
-   <field name="dewey-sort" type="string" indexed="true" stored="true" />
-   <field name="dewey-raw" type="string" indexed="true" stored="true" />
+   <field name="dewey-sort" type="string" indexed="true" stored="true"/>
+   <field name="dewey-raw" type="string" indexed="true" stored="true"/>
    <field name="author2" type="textProper" indexed="true" stored="true" multiValued="true"/>
    <field name="author2Str" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="author2-role" type="string" indexed="true" stored="true" multiValued="true"/>
@@ -234,7 +240,7 @@
    <field name="topic" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="topic_unstemmed" type="textProper" indexed="true" stored="true" multiValued="true"/>
    <field name="topic_facet" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
-   <field name="topic_browse" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="topic_browse" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
    <field name="author_browse" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
    <field name="genre" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="genre_facet" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
@@ -262,7 +268,7 @@
    <dynamicField name="*_txtF_mv" type="textFacet" indexed="true" stored="true" multiValued="true"/>
    <dynamicField name="*_txtP" type="textProper" indexed="true" stored="true"/>
    <dynamicField name="*_txtP_mv" type="textProper" indexed="true" stored="true" multiValued="true"/>
-   <dynamicField name="*_bool" type="boolean" indexed="true" stored="true"/>
+   <dynamicField name="*_bool" type="string" indexed="true" stored="true"/>
    <!-- Fields added by VZG -->
    <field name="fullrecord_marcxml" type="string" indexed="false" stored="true"/>
    <field name="collection_details" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
@@ -297,7 +303,7 @@
    <field name="congress" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="corp" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="source2" type="text" indexed="true" stored="true" multiValued="true"/>
-   <field name="lang_code" type="text" indexed="true" stored="true" multiValued="true"/>
+   <field name="lang_code" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
    <field name="country_code" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="class" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="class_local" type="textProper" indexed="true" stored="true" multiValued="true"/>
@@ -309,6 +315,17 @@
    <field name="abstract_unstemmed" type="textProper" indexed="true" stored="true" multiValued="true"/>
    <field name="idlink" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="aleph_id" type="string" indexed="true" stored="true"/>
+   <!-- Hierarchy Fields -->
+   <field name="hierarchytype" type="string" indexed="true" stored="true" multiValued="false"/>
+   <field name="hierarchy_top_id" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="hierarchy_top_title" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="hierarchy_parent_id" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="hierarchy_parent_title" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="hierarchy_sequence" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="is_hierarchy_id" type="string" indexed="true" stored="true" multiValued="false"/>
+   <field name="is_hierarchy_title" type="string" indexed="true" stored="true" multiValued="false"/>
+   <field name="title_in_hierarchy" type="string" indexed="true" stored="true" multiValued="true" />
+   <field name="hierarchy_browse" type="textFacetRaw" indexed="true" stored="false" multiValued="true"/>
  </fields>
  <uniqueKey>id</uniqueKey>
  <defaultSearchField>allfields</defaultSearchField>

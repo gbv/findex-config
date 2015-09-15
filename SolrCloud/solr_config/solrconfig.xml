@@ -17,7 +17,7 @@
 -->
 
 <config>
-  <luceneMatchVersion>4.6</luceneMatchVersion>
+  <luceneMatchVersion>5.0</luceneMatchVersion>
   <!-- Set this to 'false' if you want solr to continue working after it has 
        encountered an severe configuration error.  In a production environment, 
        you may want solr to keep working even if one handler is mis-configured.
@@ -130,16 +130,17 @@
     <filterCache
       class="solr.FastLRUCache"
       size="500"
-      initialSize="300"
-      autowarmCount="50"/>
+      initialSize="40"
+      autowarmCount="40"
+      cleanupThread="true"/>
 
    <!-- queryResultCache caches results of searches - ordered lists of
          document ids (DocList) based on a query, a sort, and the range
          of documents requested.  -->
     <queryResultCache
       class="solr.LRUCache"
-      size="500"
-      initialSize="500"
+      size="300"
+      initialSize="50"
       autowarmCount="0"/>
 
   <!-- documentCache caches Lucene Document objects (the stored fields for each document).
@@ -147,19 +148,20 @@
     <documentCache
       class="solr.LRUCache"
       size="500"
-      initialSize="500"
+      initialSize="100"
       autowarmCount="100"/>
 
    <!-- Cache used to hold field values that are quickly accessible 
          by document id.  The fieldValueCache is created by default 
          even if not configured here. 
     --> 
-<!--      <fieldValueCache 
+     <fieldValueCache 
         class="solr.FastLRUCache" 
-        size="512" 
+        size="500" 
         autowarmCount="10" 
-        showItems="32" 
-      /> -->
+        showItems="32"
+        cleanupThread="true"
+      /> 
 
     <!-- If true, stored fields that are not requested will be loaded lazily.
 
@@ -317,7 +319,7 @@
      <str name="spellcheck.extendedResults">true</str>
      <str name="spellcheck.onlyMorePopular">true</str>
      <str name="spellcheck.count">20</str>
-     <str name="timeAllowed">4000</str>
+     <str name="timeAllowed">8000</str> 
     </lst>
     <arr name="last-components">
       <str>spellcheck</str>
@@ -339,7 +341,7 @@
      <str name="spellcheck.extendedResults">true</str>
      <str name="spellcheck.onlyMorePopular">true</str>
      <str name="spellcheck.count">20</str>
-     <str name="timeAllowed">4000</str>
+     <str name="timeAllowed">8000</str>
     </lst>
     <arr name="last-components">
       <str>spellcheck</str>
@@ -353,7 +355,7 @@
      <str name="spellcheck.extendedResults">true</str>
      <str name="spellcheck.onlyMorePopular">true</str>
      <str name="spellcheck.count">20</str>
-     <str name="timeAllowed">4000</str>
+     <str name="timeAllowed">8000</str>
     </lst>
     <arr name="last-components">
       <str>spellcheck</str>
@@ -491,7 +493,11 @@
        
        To enable solr1.1 behavior, remove the /update handler or change its path
     -->
-  <requestHandler name="/update" class="solr.UpdateRequestHandler" />
+  <requestHandler name="/update" class="solr.UpdateRequestHandler">
+    <lst name="defaults">
+       <str name="update.chain">addtimestamp</str>
+    </lst>
+  </requestHandler>
 
   <!--
    Analysis request handler.  Since Solr 1.3.  Use to returnhow a document is analyzed.  Useful
@@ -572,6 +578,14 @@
    </formatter>
   </highlighting>
   
+  <updateRequestProcessorChain name="addtimestamp">
+   <processor class="solr.TimestampUpdateProcessorFactory">
+    <str name="fieldName">up_date</str>
+   </processor>
+   <processor class="solr.LogUpdateProcessorFactory" />
+   <processor class="solr.RunUpdateProcessorFactory" />
+  </updateRequestProcessorChain>
+
   
   <!-- queryResponseWriter plugins... query responses will be written using the
     writer specified by the 'wt' request parameter matching the name of a registered

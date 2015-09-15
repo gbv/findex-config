@@ -175,3 +175,30 @@ public Set getStandortILN(Record record){
     }
     return result;
 }
+
+public Set getSchlagworteILN(Record record){
+    Set result = new LinkedHashSet();
+    String cl = "";
+
+    List holdings = record.getVariableFields("982");
+    Iterator fieldsIter = holdings.iterator();
+    if (holdings != null) {
+        DataField holdingField;
+        while(fieldsIter.hasNext()) {
+             String holding = "";
+             holdingField = (DataField) fieldsIter.next();
+
+             if (holdingField != null) {
+                 if (holdingField.getSubfield('2') != null) {
+                     holding = holdingField.getSubfield('2').getData();
+                 }
+                 if (holdingField.getSubfield('a') != null) {
+                     cl = holdingField.getSubfield('a').getData();
+                 }
+                 result.add(holding + ":" + cl);
+                 cl = "";
+             }
+        }
+    }
+    return result;
+}
