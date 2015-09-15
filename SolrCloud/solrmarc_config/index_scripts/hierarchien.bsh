@@ -1,0 +1,120 @@
+import org.marc4j.marc.Record;
+import org.marc4j.marc.ControlField;
+import org.marc4j.marc.Subfield;
+import org.marc4j.marc.DataField;
+
+org.solrmarc.index.SolrIndexer indexer = null;
+
+/**
+ * Determine Record Format(s)
+ *
+ * @param  Record          record
+ * @return Set     format of record
+ */
+
+public boolean isTopRecord(Record record) {
+  String leader = record.getLeader().toString();
+  leaderBit6 = leader.charAt(6);
+  leaderBit7 = leader.charAt(7);
+  leaderBit19 = leader.charAt(19);
+  if (Character.toUpperCase(leaderBit6) == 'A' && Character.toUpperCase(leaderBit7) == 'M' && Character.toUpperCase(leaderBit19) == 'A') {
+    return true;
+  }
+  if (Character.toUpperCase(leaderBit6) == 'A' && Character.toUpperCase(leaderBit7) == 'S') {
+    return true;
+  }
+  if (Character.toUpperCase(leaderBit6) == 'A' && Character.toUpperCase(leaderBit7) == 'B') {
+    return true;
+  }
+  return false;
+}
+
+public String get_hierarchy_top_data(Record record, String id_or_text) {
+  if (isTopRecord(record) == true) {
+      if (id_or_text.equals("text")) {
+        DataField title = (DataField)record.getVariableField("245");
+        if (title.getSubfield('a') != null) {
+          String text = title.getSubfield('a').getData();
+          return text;
+        }
+      } else {
+        String ppn = ((ControlField)record.getVariableField("001")).getData();
+        return ppn;
+      }
+  }
+  return null;
+}
+
+public String get_hierarchy_data(Record record, String id_or_text) {
+  if (isTopRecord(record) == true) {
+      return get_hierarchy_top_data(record, id_or_text);
+  }
+  else {
+    DataField link;
+    link = (DataField)record.getVariableField("773");
+    if (link != null) {
+      if (id_or_text.equals("text")) {
+        if (link.getSubfield('t') != null) {
+          String text = link.getSubfield('t').getData();
+          return text;
+        }
+      } else {
+        if(link.getSubfield('w') != null) {
+          String id = link.getSubfield('w').getData();
+          id = id.toUpperCase().replaceAll("\\(DE-\\d{3}\\)", "");
+          return id;
+        }
+      }
+    }
+
+    link = (DataField)record.getVariableField("800");
+    if (link != null) {
+      if (id_or_text.equals("text")) {
+        if (link.getSubfield('t') != null) {
+          String text = link.getSubfield('t').getData();
+          return text;
+        }
+      } else {
+        if(link.getSubfield('w') != null) {
+          String id = link.getSubfield('w').getData();
+          id = id.toUpperCase().replaceAll("\\(DE-\\d{3}\\)", "");
+          return id;
+        }
+      }
+    }
+
+    link = (DataField)record.getVariableField("810");
+    if (link != null) {
+      if (id_or_text.equals("text")) {
+        if (link.getSubfield('t') != null) {
+          String text = link.getSubfield('t').getData();
+          return text;
+        }
+      } else {
+        if(link.getSubfield('w') != null) {
+          String id = link.getSubfield('w').getData();
+          id = id.toUpperCase().replaceAll("\\(DE-\\d{3}\\)", "");
+          return id;
+        }
+      }
+    }
+
+    link = (DataField)record.getVariableField("830");
+    if (link != null) {
+      if (id_or_text.equals("text")) {
+        if (link.getSubfield('a') != null) {
+          String text = link.getSubfield('a').getData();
+          return text;
+        }
+      } else {
+        if(link.getSubfield('w') != null) {
+          String id = link.getSubfield('w').getData();
+          id = id.toUpperCase().replaceAll("\\(DE-\\d{3}\\)", "");
+          return id;
+        }
+      }
+    }
+  }
+  return null;
+}
+
