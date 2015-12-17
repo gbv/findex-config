@@ -17,6 +17,7 @@ Set getPPNLinks(Record record)
             Subfield ppnlink = (Subfield)i.next();
             String ppn = ppnlink.getData();
             ppn = ppn.toUpperCase().replaceAll("\\(DE-\\d{3}\\)", "");
+            ppn = ppn.toUpperCase().replaceAll("\\(DE-B\\d{4}\\)", "");
             result.add(ppn);
           }
         }

@@ -472,6 +472,10 @@ public String getFormatVZG(Record record) {
       return "Noten";
       break;
 
+    case 'P':
+      return "Medienkombination";
+      break;
+
   /*  case 'G':
       // 007 prüfen
       return "Mikroformen";
@@ -674,6 +678,10 @@ public String getFormatVZGEng(Record record) {
 
     case 'C':
       return "Musical Score";
+      break;
+
+    case 'P':
+      return "Mixed Materials";
       break;
 
   /*  case 'G':

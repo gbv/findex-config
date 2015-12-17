@@ -1,0 +1,50 @@
+/**
+ * Get all these topics....
+ *
+ * This can be used to override built-in SolrMarc custom functions.  If you change
+ * this script, you will need to activate it in import/marc_local.properties before
+ * it will be applied during indexing.
+ */
+import org.marc4j.marc.Record;
+import org.marc4j.marc.DataField;
+import org.marc4j.marc.ControlField;
+import org.marc4j.marc.Subfield;
+import java.util.regex.Pattern;
+import java.io.*;
+
+// define the base level indexer so that its methods can be called from the script.
+// note that the SolrIndexer code will set this value before the script methods are called.
+org.solrmarc.index.SolrIndexer indexer = null;
+
+Set getTopics(Record record, String fieldSpecs) {
+    Set result = new LinkedHashSet();
+    String topic = "";
+    String type = "";
+    // Loop through the specified MARC fields:
+    String[] fieldSpec = fieldSpecs.split(":");
+    List fields = record.getVariableFields(fieldSpec);
+
+    if (fields != null) {
+        Iterator fieldsIter = fields.iterator();
+        while(fieldsIter.hasNext()) {
+                field = (DataField)fieldsIter.next();
+                classf = field.getSubfield('a');
+                if (classf != null) {
+                    topic = classf.getData();
+                    typef = field.getSubfield('2');
+                    if (typef != null) {
+                        type = typef.getData().trim();
+                    } else {
+                        type = "misc";
+                    }
+                    result.add(type + " " + topic);
+                }
+            }
+    }
+    // return string to SolrMarc
+    return result;
+}
+
+Set getTopics(Record record) {
+    return getTopics(record, "084");
+}
