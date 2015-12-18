@@ -465,8 +465,15 @@ public String getFormatVZG(Record record) {
        break;
 
     case 'R':
-      return "Spiele / Objekte";
-      break;
+      switch (Character.toUpperCase(leaderBit7)) {
+         case 'A':
+            return "Bildmaterial";
+            break;
+         default:
+            return "Spiele / Objekte";
+            break;
+         }
+         break;
 
     case 'C':
       return "Noten";
@@ -673,8 +680,15 @@ public String getFormatVZGEng(Record record) {
        break;
 
     case 'R':
-      return "Game";
-      break;
+      switch (Character.toUpperCase(leaderBit7)) {
+         case 'A':
+            return "Picture";
+            break;
+         default:
+            return "Game";
+            break;
+         }
+         break;
 
     case 'C':
       return "Musical Score";
