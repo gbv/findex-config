@@ -1,0 +1,31 @@
+import org.marc4j.marc.Record;
+import org.marc4j.marc.ControlField;
+import org.marc4j.marc.Subfield;
+import org.marc4j.marc.DataField;
+import java.io.*;
+
+org.solrmarc.index.SolrIndexer indexer = null;
+
+Set getAllAuthors(Record record, String fieldSpecs, String pattern) {
+    Set result = new LinkedHashSet();
+    String[] fieldSpec = fieldSpecs.split(":");
+    String[] patterns = pattern.split(":");
+    List fields = record.getVariableFields(fieldSpec);
+
+    if (fields != null) {
+        Iterator fieldsIter = fields.iterator();
+        while(fieldsIter.hasNext()) {
+            DataField field = (DataField)fieldsIter.next();
+            Subfield function = field.getSubfield('e');
+            if (function != null) {
+                if (Arrays.asList(patterns).contains(function.getData())) {
+                    Subfield name = field.getSubfield('a');
+                    if (name != null) {
+                         result.add(name.getData());
+                    }
+                }
+            }
+        }
+    }
+    return result;
+}
