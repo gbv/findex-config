@@ -184,6 +184,10 @@
    <field name="language" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
    <field name="format" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
    <field name="author" type="textProper" indexed="true" stored="true" termVectors="true"/>
+   <field name="author_variant" type="text" indexed="true" stored="true" multiValued="true" termVectors="true"/>
+   <field name="author_role" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="author_facet" type="textFacet" indexed="true" stored="false" multiValued="true"/>
+   <field name="author_sort" type="string" indexed="true" stored="true"/>
    <field name="authorSound" type="textSound" indexed="true" stored="false" multiValued="true" termVectors="true"/>
    <field name="author-letter" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="authorStr" type="string" indexed="true" stored="true"/>
@@ -225,9 +229,14 @@
    <field name="dewey-sort" type="string" indexed="true" stored="true"/>
    <field name="dewey-raw" type="string" indexed="true" stored="true"/>
    <field name="author2" type="textProper" indexed="true" stored="true" multiValued="true"/>
+   <field name="author2_variant" type="text" indexed="true" stored="true" multiValued="true"/>
+   <field name="author2_role" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="author_corporate" type="textProper" indexed="true" stored="true" multiValued="true"/>
+   <field name="author_corporate_role" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="author_fuller" type="textProper" indexed="true" stored="true" multiValued="true" />
+   <field name="author2_fuller" type="textProper" indexed="true" stored="true" multiValued="true" /> 
    <field name="author2Str" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="author2-role" type="string" indexed="true" stored="true" multiValued="true"/>
-   <field name="author_fuller" type="textProper" indexed="true" stored="true" />
    <field name="author_additional" type="textProper" indexed="true" stored="true" multiValued="true"/>
    <field name="author_additionalStr" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="title_alt" type="text" indexed="true" stored="true" multiValued="true"/>
@@ -350,10 +359,9 @@
  <copyField source="fulltext" dest="fulltext_unstemmed"/>
  <copyField source="fulltext" dest="fulltextGer"/>
  <copyField source="fulltext" dest="fulltextSound"/>
+ <copyField source="author_browse" dest="author_facet"/>
  <!-- CopyFields for Alphabetic Browse -->
  <copyField source="topic"    dest="topic_browse"/>
- <copyField source="author"    dest="author_browse"/>
- <copyField source="author2"    dest="author_browse"/>
  <copyField source="author"    dest="authorSound"/>
  <copyField source="author2"    dest="authorSound"/>
  <!-- VZG -->
