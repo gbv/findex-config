@@ -450,8 +450,8 @@ public String getFormatVZG(Record record) {
        break;
  
     case 'E':
-       return "Karten";
-       break;
+      return "Karten";
+      break;
 
     case 'D':
     case 'F':
@@ -467,11 +467,11 @@ public String getFormatVZG(Record record) {
     case 'R':
       switch (Character.toUpperCase(leaderBit7)) {
          case 'A':
-            return "Bildmaterial";
-            break;
+           return "Bildmaterial";
+           break;
          default:
-            return "Spiele / Objekte";
-            break;
+           return "Spiele / Objekte";
+           break;
          }
          break;
 

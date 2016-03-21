@@ -129,7 +129,7 @@
          -->
     <filterCache
       class="solr.FastLRUCache"
-      size="500"
+      size="2000"
       initialSize="40"
       autowarmCount="40"
       cleanupThread="true"/>
@@ -139,7 +139,7 @@
          of documents requested.  -->
     <queryResultCache
       class="solr.LRUCache"
-      size="300"
+      size="5000"
       initialSize="50"
       autowarmCount="0"/>
 
@@ -147,7 +147,7 @@
        Since Lucene internal document ids are transient, this cache will not be autowarmed.  -->
     <documentCache
       class="solr.LRUCache"
-      size="500"
+      size="10000"
       initialSize="100"
       autowarmCount="100"/>
 
@@ -319,7 +319,7 @@
      <str name="spellcheck.extendedResults">true</str>
      <str name="spellcheck.onlyMorePopular">true</str>
      <str name="spellcheck.count">20</str>
-     <str name="timeAllowed">8000</str> 
+     <str name="timeAllowed">8000</str>
     </lst>
     <arr name="last-components">
       <str>spellcheck</str>
