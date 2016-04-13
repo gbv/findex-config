@@ -428,10 +428,14 @@ public String getFormatVZG(Record record) {
                     return "Datenträger";
                     break;
                   }
+/* auskommentiert, 13.04.2016. co ist eigentlich ein
+   optischer Datenträger; unklar, warum diese Regel
+   2014 eingeführt wurde; bis zu einer besseren
+   Spezifikation erstmal wieder co->elektronische Ressource
                   else if (fCode == 'O') {
-                    return "Buch";
+                    return "Bücher";
                     break;
-                  }
+                  } */
                 }
               }
             }
@@ -643,10 +647,14 @@ public String getFormatVZGEng(Record record) {
                     return "Data Media";
                     break;
                   }
+/* auskommentiert, 13.04.2016. co ist eigentlich ein
+   optischer Datenträger; unklar, warum diese Regel
+   2014 eingeführt wurde; bis zu einer besseren
+   Spezifikation erstmal wieder co->elektronische Ressource
                   else if (fCode == 'O') {
                     return "Book";
-                    break;
-                  }
+                    break; 
+                  } */
                 }
               }
             }
