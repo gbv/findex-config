@@ -736,16 +736,20 @@ public String remote(Record record)
 {
     // check the 007 - this is a repeating field
     List fields = record.getVariableFields("007");
-    Iterator fieldsIter = fields.iterator();
-    if (fields != null) {
-        ControlField formatField;
-        String formatFieldStr = "";
-        while(fieldsIter.hasNext()) {
-            formatField = (ControlField) fieldsIter.next();
-            char formatCode = formatField.getData().toUpperCase().charAt(0);
-            char formatCode2 = formatField.getData().toUpperCase().charAt(1);
-            if (formatCode == 'C' && formatCode2 == 'R') {
-                return "true";
+    String leader = record.getLeader().toString();
+//System.out.println("Leader: " + leader + " 67:" + leader.toUpperCase().charAt(6) + leader.toUpperCase().charAt(7));
+    if (leader.toUpperCase().charAt(6) == 'M' && (leader.toUpperCase().charAt(7) == 'A' || leader.toUpperCase().charAt(7) == 'M' || leader.toUpperCase().charAt(7) == 'S')) {
+        Iterator fieldsIter = fields.iterator();
+        if (fields != null) {
+            ControlField formatField;
+            String formatFieldStr = "";
+            while(fieldsIter.hasNext()) {
+                formatField = (ControlField) fieldsIter.next();
+                char formatCode = formatField.getData().toUpperCase().charAt(0);
+                char formatCode2 = formatField.getData().toUpperCase().charAt(1);
+                if (formatCode == 'C' && formatCode2 == 'R') {
+                    return "true";
+                }
             }
         }
     }

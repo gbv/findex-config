@@ -140,10 +140,39 @@ public String cleanDate(String date)
 public String getDate(Record record)
 {
     ControlField fixedField = (ControlField) record.getVariableField("008");
-    String date = fixedField.getData().substring(7,11);
-    if (date.matches("\\d\\d\\d\\d")) {
-        int num = Integer.parseInt(date);
-        if (num < 2050 && num > 1000) return date;
+    if (fixedField != null) {
+        String date = fixedField.getData().substring(7,11);
+        if (date.matches("\\d\\d\\d\\d")) {
+            int num = Integer.parseInt(date);
+            if (num < 2050 && num > 1000) return date;
+        }
     }
     return (null);
+}
+
+public Set getDates(Record record)
+{
+    Set result = new LinkedHashSet();
+    ControlField fixedField = (ControlField) record.getVariableField("008");
+    if (fixedField != null) {
+        String date = fixedField.getData().substring(7,11);
+        String endDate = fixedField.getData().substring(11,15);
+        if (date.matches("\\d\\d\\d\\d")) {
+            int num = Integer.parseInt(date);
+            if (num < 2050 && num > 1000) {
+                result.add(date);
+                if (endDate.matches("\\d\\d\\d\\d")) {
+                    int endNum = Integer.parseInt(endDate);
+                    if (endNum < 2050 && endNum > 1000 && endNum > num) {
+                        for (int yearNum = num; yearNum <= endNum; yearNum++) {
+                            result.add(Integer.toString(yearNum));
+                        }
+                    }
+                }
+                return result;
+            }
+        }
+    }
+    return (null);
+
 }

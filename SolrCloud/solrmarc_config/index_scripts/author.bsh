@@ -215,7 +215,6 @@ public List getRelatorsFilteredByRelator(Record record, String tagList,
                         continue;
                     }
                 }
-
                 result.add(relator);
             }
         }
@@ -363,7 +362,7 @@ public String processInitials(String authorName) {
     String[] names = authorName.split(" "); //split into tokens on spaces
     // if this is a personal name we'll reorganise to put lastname at the end
     String result = "";
-    if (isPersonalName) {
+    if (isPersonalName && names.length>0) {
         String lastName = names[0]; 
         for (int i = 0; i < names.length-1; i++) {
             names[i] = names[i+1];
@@ -375,7 +374,7 @@ public String processInitials(String authorName) {
         if (name.length() > 0) {
             String initial = name.substring(0,1);
             // if there is a hyphenated name, use both initials
-            if (name.indexOf('-') > 0) {
+            if (name.indexOf('-') > 0 && name.length() > name.indexOf('-')+1) {
                 int pos = name.indexOf('-');
                 String extra = name.substring(pos+1,pos+2);
                 initial = initial + " " + extra;
