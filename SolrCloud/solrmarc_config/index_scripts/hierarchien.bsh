@@ -45,76 +45,95 @@ public String get_hierarchy_top_data(Record record, String id_or_text) {
   return null;
 }
 
-public String get_hierarchy_data(Record record, String id_or_text) {
+public Set get_hierarchy_data(Record record, String id_or_text) {
+  Set result = new LinkedHashSet(); 
   if (isTopRecord(record) == true) {
-      return get_hierarchy_top_data(record, id_or_text);
+      result.add(get_hierarchy_top_data(record, id_or_text));
   }
   else {
+    List fields;
     DataField link;
-    link = (DataField)record.getVariableField("773");
-    if (link != null) {
-      if (id_or_text.equals("text")) {
-        if (link.getSubfield('t') != null) {
-          String text = link.getSubfield('t').getData();
-          return text;
-        }
-      } else {
-        if(link.getSubfield('w') != null) {
-          String id = link.getSubfield('w').getData();
-          id = id.toUpperCase().replaceAll("\\(DE-\\d{3}\\)", "");
-          return id;
-        }
-      }
+
+    fields = record.getVariableFields("773");
+    if (fields != null) {
+      fieldsIter = fields.iterator();
+      while(fieldsIter.hasNext()) {
+          link = (DataField) fieldsIter.next();
+          if (id_or_text.equals("text")) {
+              if (link.getSubfield('t') != null) {
+              String text = link.getSubfield('t').getData();
+              result.add(text);
+              }
+          } else {
+              if(link.getSubfield('w') != null) {
+              String id = link.getSubfield('w').getData();
+              id = id.toUpperCase().replaceAll("\\(DE-\\d{3}\\)", "");
+              result.add(id);
+              }
+          }
+       }
+    }   
+
+    fields = record.getVariableFields("800");
+    if (fields != null) {
+      fieldsIter = fields.iterator();
+      while(fieldsIter.hasNext()) {
+          link = (DataField) fieldsIter.next();
+          if (id_or_text.equals("text")) {
+              if (link.getSubfield('t') != null) {
+              String text = link.getSubfield('t').getData();
+              result.add(text);
+              }
+          } else {
+              if(link.getSubfield('w') != null) {
+              String id = link.getSubfield('w').getData();
+              id = id.toUpperCase().replaceAll("\\(DE-\\d{3}\\)", "");
+              result.add(id);
+              }
+          }
+       }
     }
 
-    link = (DataField)record.getVariableField("800");
-    if (link != null) {
-      if (id_or_text.equals("text")) {
-        if (link.getSubfield('t') != null) {
-          String text = link.getSubfield('t').getData();
-          return text;
-        }
-      } else {
-        if(link.getSubfield('w') != null) {
-          String id = link.getSubfield('w').getData();
-          id = id.toUpperCase().replaceAll("\\(DE-\\d{3}\\)", "");
-          return id;
-        }
-      }
+    fields = record.getVariableFields("810");
+    if (fields != null) {
+      fieldsIter = fields.iterator();
+      while(fieldsIter.hasNext()) {
+          link = (DataField) fieldsIter.next();
+          if (id_or_text.equals("text")) {
+              if (link.getSubfield('t') != null) {
+              String text = link.getSubfield('t').getData();
+              result.add(text);
+              }
+          } else {
+              if(link.getSubfield('w') != null) {
+              String id = link.getSubfield('w').getData();
+              id = id.toUpperCase().replaceAll("\\(DE-\\d{3}\\)", "");
+              result.add(id);
+              }
+          }
+       }
     }
 
-    link = (DataField)record.getVariableField("810");
-    if (link != null) {
-      if (id_or_text.equals("text")) {
-        if (link.getSubfield('t') != null) {
-          String text = link.getSubfield('t').getData();
-          return text;
-        }
-      } else {
-        if(link.getSubfield('w') != null) {
-          String id = link.getSubfield('w').getData();
-          id = id.toUpperCase().replaceAll("\\(DE-\\d{3}\\)", "");
-          return id;
-        }
-      }
-    }
-
-    link = (DataField)record.getVariableField("830");
-    if (link != null) {
-      if (id_or_text.equals("text")) {
-        if (link.getSubfield('a') != null) {
-          String text = link.getSubfield('a').getData();
-          return text;
-        }
-      } else {
-        if(link.getSubfield('w') != null) {
-          String id = link.getSubfield('w').getData();
-          id = id.toUpperCase().replaceAll("\\(DE-\\d{3}\\)", "");
-          return id;
-        }
-      }
+    fields = record.getVariableFields("830");
+    if (fields != null) {
+      fieldsIter = fields.iterator();
+      while(fieldsIter.hasNext()) {
+          link = (DataField) fieldsIter.next();
+          if (id_or_text.equals("text")) { 
+              if (link.getSubfield('a') != null) {
+              String text = link.getSubfield('a').getData();
+              result.add(text);
+              }
+          } else {
+              if(link.getSubfield('w') != null) {
+              String id = link.getSubfield('w').getData();
+              id = id.toUpperCase().replaceAll("\\(DE-\\d{3}\\)", "");
+              result.add(id);
+              }
+          }
+       }
     }
   }
-  return null;
+  return result;
 }
 
