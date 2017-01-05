@@ -17,7 +17,7 @@
 -->
 
 <config>
-  <luceneMatchVersion>5.0</luceneMatchVersion>
+  <luceneMatchVersion>6.2</luceneMatchVersion>
   <!-- Set this to 'false' if you want solr to continue working after it has 
        encountered an severe configuration error.  In a production environment, 
        you may want solr to keep working even if one handler is mis-configured.
@@ -26,6 +26,9 @@
          -Dsolr.abortOnConfigurationError=false
      -->
   <abortOnConfigurationError>${solr.abortOnConfigurationError:false}</abortOnConfigurationError>
+
+  <lib dir="${solr.install.dir:../../../..}/contrib/analysis-extras/lib" regex=".*\.jar" />
+  <lib dir="${solr.install.dir:../../../..}/contrib/analysis-extras/lucene-libs" regex=".*\.jar" />
 
   <!-- Used to specify an alternate directory to hold all index data
        other than the default ./data under the Solr home.
@@ -49,7 +52,6 @@
 
   <indexConfig>
     <maxIndexingThreads>12</maxIndexingThreads>
-    <nrtMode>true</nrtMode>
   </indexConfig>
 
   <!-- the default high-performance update handler -->
@@ -129,7 +131,7 @@
          -->
     <filterCache
       class="solr.FastLRUCache"
-      size="2000"
+      size="500"
       initialSize="40"
       autowarmCount="40"
       cleanupThread="true"/>
@@ -139,7 +141,7 @@
          of documents requested.  -->
     <queryResultCache
       class="solr.LRUCache"
-      size="5000"
+      size="300"
       initialSize="50"
       autowarmCount="0"/>
 
@@ -147,7 +149,7 @@
        Since Lucene internal document ids are transient, this cache will not be autowarmed.  -->
     <documentCache
       class="solr.LRUCache"
-      size="10000"
+      size="500"
       initialSize="100"
       autowarmCount="100"/>
 
@@ -320,6 +322,8 @@
      <str name="spellcheck.onlyMorePopular">true</str>
      <str name="spellcheck.count">20</str>
      <str name="timeAllowed">8000</str>
+     <str name="q.op">AND</str>
+     <str name="df">allfields</str>
     </lst>
     <arr name="last-components">
       <str>spellcheck</str>
@@ -342,6 +346,8 @@
      <str name="spellcheck.onlyMorePopular">true</str>
      <str name="spellcheck.count">20</str>
      <str name="timeAllowed">8000</str>
+     <str name="q.op">AND</str>
+     <str name="df">allfields</str>
     </lst>
     <arr name="last-components">
       <str>spellcheck</str>
@@ -356,6 +362,8 @@
      <str name="spellcheck.onlyMorePopular">true</str>
      <str name="spellcheck.count">20</str>
      <str name="timeAllowed">8000</str>
+     <str name="q.op">AND</str>
+     <str name="df">allfields</str>
     </lst>
     <arr name="last-components">
       <str>spellcheck</str>
@@ -529,7 +537,7 @@
     </lst>
   </requestHandler>
   -->
-  <requestHandler name="/admin/" class="solr.admin.AdminHandlers" />
+<!-- no longer available in Solr 6  <requestHandler name="/admin/" class="solr.admin.AdminHandlers" /> -->
   
   <!-- ping/healthcheck -->
   <requestHandler name="/admin/ping" class="PingRequestHandler">

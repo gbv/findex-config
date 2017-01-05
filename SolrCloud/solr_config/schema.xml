@@ -88,14 +88,14 @@
         <tokenizer class="solr.ICUTokenizerFactory"/>
         <filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0"/>
         <filter class="solr.ICUFoldingFilterFactory"/>
-        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt"/>
+<!--        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt"/> -->
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
       </analyzer>
       <analyzer type="query">
         <tokenizer class="solr.ICUTokenizerFactory"/>
         <filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="0" catenateNumbers="0" catenateAll="0"/>
         <filter class="solr.ICUFoldingFilterFactory"/>
-        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt"/>
+<!--        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt"/> -->
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
       </analyzer>
     </fieldType>
@@ -105,7 +105,7 @@
         <tokenizer class="solr.ICUTokenizerFactory"/>
         <filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="0" catenateNumbers="0" catenateAll="0"/>
         <filter class="solr.ICUFoldingFilterFactory"/>
-        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt"/>
+<!--        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt"/> -->
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
       </analyzer>
     </fieldType>
@@ -114,14 +114,14 @@
       <analyzer type="index">
         <tokenizer class="solr.ICUTokenizerFactory"/>
         <filter class="solr.ICUFoldingFilterFactory"/>
-        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt"/>
+<!--        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt"/> -->
         <filter class="solr.ShingleFilterFactory" maxShingleSize="2" outputUnigrams="false"/>
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
       </analyzer>
       <analyzer type="query">
         <tokenizer class="solr.ICUTokenizerFactory"/>
         <filter class="solr.ICUFoldingFilterFactory"/>
-        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt"/>
+<!--        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt"/> -->
         <filter class="solr.ShingleFilterFactory" maxShingleSize="2" outputUnigrams="false"/>
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
       </analyzer>
@@ -159,6 +159,7 @@
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
       </analyzer>
     </fieldType>
+    <fieldType name="geo" class="solr.SpatialRecursivePrefixTreeFieldType" distErrPct="0.025" maxDistErr="0.000009" distanceUnits="degrees" />
   </types>
  <fields>
    <!-- SolrCloud -->
@@ -259,6 +260,8 @@
    <field name="era_facet" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
    <field name="illustrated" type="string" indexed="true" stored="true" multiValued="false"/>
    <field name="long_lat" type="textFacet" indexed="true" stored="true" multiValued="false"/>
+   <field name="long_lat_display" type="text" indexed="true" stored="true" multiValued="true"/>
+   <field name="long_lat_label" type="string" indexed="false" stored="true" multiValued="true"/>
    <!-- Used for loading correct record driver -->
    <field name="recordtype" type="string" indexed="false" stored="true"/>
    <!-- Tracking fields to keep track of oldest and most recent index times -->
@@ -278,6 +281,7 @@
    <dynamicField name="*_txtP" type="textProper" indexed="true" stored="true"/>
    <dynamicField name="*_txtP_mv" type="textProper" indexed="true" stored="true" multiValued="true"/>
    <dynamicField name="*_bool" type="string" indexed="true" stored="true"/>
+   <dynamicField name="*_geo" type="geo" indexed="true" stored="true" multiValued="true" />
    <!-- Fields added by VZG -->
    <field name="fullrecord_marcxml" type="string" indexed="false" stored="true"/>
    <field name="collection_details" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
@@ -337,7 +341,6 @@
    <field name="hierarchy_browse" type="textFacetRaw" indexed="true" stored="false" multiValued="true"/>
  </fields>
  <uniqueKey>id</uniqueKey>
- <defaultSearchField>allfields</defaultSearchField>
  <!-- CopyFields for Spelling -->
  <!-- ** Basic, single word spelling -->
  <copyField source="allfields" dest="spelling"/>
@@ -376,6 +379,4 @@
  <copyField source="abstract" dest="abstractGer"/>
  <!-- no stemming -->
  <copyField source="abstract" dest="abstract_unstemmed"/>
- <!-- Default Boolean Operator -->
- <solrQueryParser defaultOperator="AND"/>
 </schema>
