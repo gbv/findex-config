@@ -30,6 +30,29 @@ Set getISBN1013(Record record) {
             }
         }
     }
+    isbnfields = null;
+    isbnfields = record.getVariableFields("776");
+    if (isbnfields != null) {
+        Iterator fieldsIter = isbnfields.iterator();
+        while(fieldsIter.hasNext()) {
+            isbnfield = (DataField) fieldsIter.next();
+            if (isbnfield != null) {
+                if (isbnfield.getSubfield('z') != null) {
+                    String isbn = isbnfield.getSubfield('z').getData();
+                    String isbnclean = isbn.replaceAll("\\s+.*$", "");
+                    String isbnnum = isbnclean.replaceAll("[^0-9Xx]", "");
+                    result.add(isbnnum);
+                    if (isbnnum.length()==10) {
+                        result.add(ISBN1013(isbnnum));
+                    }
+                    else if (isbnnum.length()==13) {
+                        result.add(ISBN1310(isbnnum));
+                    }
+
+                }
+            }
+        }
+    }
     return result;
   }
 

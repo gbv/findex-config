@@ -1,5 +1,6 @@
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.time.Year;
 import org.apache.log4j.Logger;
 import org.marc4j.marc.*;
 import org.solrmarc.marc.MarcImporter;
@@ -163,6 +164,9 @@ public Set getDates(Record record)
                 result.add(date);
                 if (endDate.matches("\\d\\d\\d\\d")) {
                     int endNum = Integer.parseInt(endDate);
+                    if (endNum == 9999) {
+                        endNum = year = Year.now().getValue();
+                    }
                     if (endNum < 2050 && endNum > 1000 && endNum > num) {
                         for (int yearNum = num; yearNum <= endNum; yearNum++) {
                             result.add(Integer.toString(yearNum));

@@ -379,6 +379,17 @@ public String getFormatVZG(Record record) {
     case 'A':
       switch (Character.toUpperCase(leaderBit7)) {
         case 'M':
+          if (fields != null) {
+              fieldsIter = fields.iterator();
+              while (fieldsIter.hasNext()) {
+                  fField = (ControlField) fieldsIter.next();
+                  fCode = fField.getData().toUpperCase().charAt(0);
+                  if (fCode == 'C') {
+                      return "Elektronische Bücher";
+                      break;
+                  }
+              }
+          }
           return "Bücher";
           break;
         case 'B':
@@ -404,9 +415,9 @@ public String getFormatVZG(Record record) {
           }
           return "Aufsätze";
           break;
-        default:
-          return "unbekannt";
-          break;
+//       default:
+//          return "unbekannt";
+//          break;
       }
       break;
 
@@ -447,9 +458,9 @@ public String getFormatVZG(Record record) {
          case 'A':
            return "Elektronische Aufsätze";
            break;
-         default:
-           return "unbekannt";
-           break;
+//         default:
+//           return "unbekannt";
+//           break;
        }
        break;
  
@@ -492,13 +503,17 @@ public String getFormatVZG(Record record) {
       return "Mikroformen";
       break; */
   }
-
   if (fields != null) {
+    fieldsIter = fields.iterator(); 
     while (fieldsIter.hasNext()) {
-      fField = (ControlField) fieldsIter.next();
-      fCode = fField.getData().toUpperCase().charAt(0);
+        fField = (ControlField) fieldsIter.next();
+        fCode = fField.getData().toUpperCase().charAt(0);
         if (fCode == 'V') {
           return "Filme";
+          break;
+        }
+        else if (fCode == 'C') {
+          return "Elektronische Ressource";
           break;
         }
         else if (fCode == 'H' && leaderBit7 != 'S') {
@@ -598,6 +613,17 @@ public String getFormatVZGEng(Record record) {
     case 'A':
       switch (Character.toUpperCase(leaderBit7)) {
         case 'M':
+          if (fields != null) {
+              fieldsIter = fields.iterator();
+              while (fieldsIter.hasNext()) {
+                  fField = (ControlField) fieldsIter.next();
+                  fCode = fField.getData().toUpperCase().charAt(0);
+                  if (fCode == 'C') {
+                      return "eBook";
+                      break;
+                  }
+              }
+          }
           return "Book";
           break;
         case 'B':
@@ -623,9 +649,9 @@ public String getFormatVZGEng(Record record) {
           }
           return "Article";
           break;
-        default:
-          return "unknown";
-          break;
+//        default:
+//          return "unknown";
+//          break;
       }
       break;
 
@@ -666,9 +692,9 @@ public String getFormatVZGEng(Record record) {
          case 'A':
            return "electronic Article";
            break;
-         default:
-           return "unknown";
-           break;
+//         default:
+//           return "unknown";
+//           break;
        }
        break;
  
@@ -719,6 +745,10 @@ public String getFormatVZGEng(Record record) {
       fCode = fField.getData().toUpperCase().charAt(0);
         if (fCode == 'V') {
           return "Motion Picture";
+          break;
+        }
+        else if (fCode == 'C') {
+          return "electronic Resource";
           break;
         }
         else if (fCode == 'H' && Character.toUpperCase(leaderBit7) != 'S') {

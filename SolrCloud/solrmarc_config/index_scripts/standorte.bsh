@@ -202,3 +202,52 @@ public Set getSchlagworteILN(Record record){
     }
     return result;
 }
+
+public Set getDOI(Record record) {
+    Set result = new LinkedHashSet();
+    
+    List f024s = record.getVariableFields("024");
+    Iterator f024Iter = f024s.iterator();
+    if (f024 != null) {
+        while (f024Iter.hasNext()) {
+            f024 = (DataField) f024Iter.next();
+            if (f024 != null) {
+                if (f024.getSubfield('2') != null) {
+                    if (f024.getSubfield('2').getData().equals("doi")) {
+                        if (f024.getSubfield('a') != null) {
+                            result.add(f024.getSubfield('a').getData());
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return result;
+}
+
+public Set getLastChangedILN(Record record) {
+    Set result = new LinkedHashSet();
+    String cl = "";
+
+    List holdings = record.getVariableFields("980");
+    Iterator fieldsIter = holdings.iterator();
+    if (holdings != null) {
+        DataField holdingField;
+        while(fieldsIter.hasNext()) {
+             String holding = "";
+             holdingField = (DataField) fieldsIter.next();
+
+             if (holdingField != null) {
+                 if (holdingField.getSubfield('2') != null) {
+                     holding = holdingField.getSubfield('2').getData();
+                 }
+                 if (holdingField.getSubfield('f') != null) {
+                     cl = holdingField.getSubfield('z').getData();
+                     result.add(holding + "@" + cl);
+                 }
+                 cl = "";
+             }
+        }
+    }
+    return result;
+}
