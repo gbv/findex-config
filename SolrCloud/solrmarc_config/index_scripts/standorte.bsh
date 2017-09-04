@@ -241,7 +241,7 @@ public Set getLastChangedILN(Record record) {
                  if (holdingField.getSubfield('2') != null) {
                      holding = holdingField.getSubfield('2').getData();
                  }
-                 if (holdingField.getSubfield('f') != null) {
+                 if (holdingField.getSubfield('z') != null) {
                      cl = holdingField.getSubfield('z').getData();
                      result.add(holding + "@" + cl);
                  }
