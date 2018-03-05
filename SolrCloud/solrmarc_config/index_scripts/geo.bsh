@@ -1,0 +1,71 @@
+/**
+ * Custom geo coordinates parsing script
+ * takes 255 $c as input and delivers coordinates in 
+ * WKT/CQL ENVELOPE syntax as expected by Solr BBoxFields
+ *
+ * This can be used to override built-in SolrMarc custom functions.  If you change
+ * this script, you will need to activate it in import/marc_local.properties before
+ * it will be applied during indexing.
+ */
+import org.marc4j.marc.Record;
+import org.marc4j.marc.DataField;
+import org.marc4j.marc.ControlField;
+import org.marc4j.marc.Subfield;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.io.*;
+
+// define the base level indexer so that its methods can be called from the script.
+// note that the SolrIndexer code will set this value before the script methods are called.
+org.solrmarc.index.SolrIndexer indexer = null;
+
+private static final Pattern BOX_PATTERN = Pattern.compile("\\((.+)--(.+)\\/(.+)--(.+)\\)\\.");
+private static final Pattern COORDINATES_PATTERN = Pattern.compile("^([eEwWnNsS]) (\\d{3}) (\\d{2})");
+
+Set getAllCoordinates(Record record) {
+    Set result = new LinkedHashSet();
+    List f255s = record.getVariableFields("255");
+    if (f255s != null) {
+            Iterator f255Iter = f255s.iterator();
+            while(f255Iter.hasNext()) {
+                 f255 = (DataField)f255Iter.next();
+                 coordF = f255.getSubfield('c');
+                 if (coordF != null) {
+                     HashMap coord = getCoordinates(coordF.getData());
+                     String coordstring = String.format("ENVELOPE((%s,%s,%s,%s)", new Object[] { coord.get('w'), coord.get('o'), coord.get('n'), coord.get('s') });
+                     result.add(coordstring);
+                 }
+            }
+    }
+    return result;
+}
+
+HashMap getCoordinates(String coordstring) {
+    HashMap nautcoords = new HashMap();
+    HashMap coords = new HashMap();
+    Matcher boxmatcher = BOX_PATTERN.matcher(coordstring);
+    if (boxmatcher.matches()) {
+        nautcoords.put('w', toDec(boxmatcher.group(1).toUpperCase()));
+        nautcoords.put('o', toDec(boxmatcher.group(2).toUpperCase()));
+        nautcoords.put('n', toDec(boxmatcher.group(3).toUpperCase()));
+        nautcoords.put('s', toDec(boxmatcher.group(4).toUpperCase()));
+    }
+    return nautcoords;
+}
+
+Double toDec(coord) {
+    Matcher matcher = COORDINATES_PATTERN.matcher(coord);
+    if (matcher.matches()) {
+        String hemisphere = matcher.group(1).toUpperCase();
+        int degrees = Integer.parseInt(matcher.group(2));
+        int minutes = Integer.parseInt(matcher.group(3));
+        double coordinate = degrees + (minutes / 60.0);
+        if (hemisphere.equals("W") || hemisphere.equals("S")) {
+            coordinate *= -1;
+        }
+        return coordinate;
+    }
+    return Double.NaN;
+}
+
+
