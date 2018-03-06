@@ -32,7 +32,7 @@ Set getAllCoordinates(Record record) {
                  coordF = f255.getSubfield('c');
                  if (coordF != null) {
                      HashMap coord = getCoordinates(coordF.getData());
-                     String coordstring = String.format("ENVELOPE((%s,%s,%s,%s)", new Object[] { coord.get('w'), coord.get('o'), coord.get('n'), coord.get('s') });
+                     String coordstring = String.format("ENVELOPE(%s,%s,%s,%s)", new Object[] { coord.get('w'), coord.get('o'), coord.get('n'), coord.get('s') });
                      result.add(coordstring);
                  }
             }
