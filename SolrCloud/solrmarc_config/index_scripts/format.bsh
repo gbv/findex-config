@@ -397,6 +397,17 @@ public String getFormatVZG(Record record) {
           return "Zeitschriftenbände";
           break;
         case 'S':
+          if (fields != null) {
+              fieldsIter = fields.iterator();
+              while (fieldsIter.hasNext()) {
+                  fField = (ControlField) fieldsIter.next();
+                  fCode = fField.getData().toUpperCase().charAt(0);
+                  if (fCode == 'C') {
+                      return "Elektronische Zeitschriften";
+                      break;
+                  }
+              }
+          }
           return "Zeitschriften";
           break;
         // sepc sagt S für Aufsätze?!? -> Fehler?
@@ -412,6 +423,17 @@ public String getFormatVZG(Record record) {
                 }
               }
             }
+          }
+          if (fields != null) {
+              fieldsIter = fields.iterator();
+              while (fieldsIter.hasNext()) {
+                  fField = (ControlField) fieldsIter.next();
+                  fCode = fField.getData().toUpperCase().charAt(0);
+                  if (fCode == 'C') {
+                      return "Elektronische Aufsätze";
+                      break;
+                  }
+              }
           }
           return "Aufsätze";
           break;
@@ -631,6 +653,17 @@ public String getFormatVZGEng(Record record) {
           return "Serial Volume";
           break;
         case 'S':
+          if (fields != null) {
+              fieldsIter = fields.iterator();
+              while (fieldsIter.hasNext()) {
+                  fField = (ControlField) fieldsIter.next();
+                  fCode = fField.getData().toUpperCase().charAt(0);
+                  if (fCode == 'C') {
+                      return "eJournal";
+                      break;
+                  }
+              }
+          }
           return "Journal";
           break;
         // sepc sagt S für Aufsätze?!? -> Fehler?
@@ -646,6 +679,17 @@ public String getFormatVZGEng(Record record) {
                 }
               }
             }
+          }
+          if (fields != null) {
+              fieldsIter = fields.iterator();
+              while (fieldsIter.hasNext()) {
+                  fField = (ControlField) fieldsIter.next();
+                  fCode = fField.getData().toUpperCase().charAt(0);
+                  if (fCode == 'C') {
+                      return "electronic Article";
+                      break;
+                  }
+              }
           }
           return "Article";
           break;
@@ -768,7 +812,7 @@ public String remote(Record record)
     List fields = record.getVariableFields("007");
     String leader = record.getLeader().toString();
 //System.out.println("Leader: " + leader + " 67:" + leader.toUpperCase().charAt(6) + leader.toUpperCase().charAt(7));
-    if (leader.toUpperCase().charAt(6) == 'M' && (leader.toUpperCase().charAt(7) == 'A' || leader.toUpperCase().charAt(7) == 'M' || leader.toUpperCase().charAt(7) == 'S')) {
+    if ((leader.toUpperCase().charAt(6) == 'M' || leader.toUpperCase().charAt(6) == 'A') && (leader.toUpperCase().charAt(7) == 'A' || leader.toUpperCase().charAt(7) == 'M' || leader.toUpperCase().charAt(7) == 'S')) {
         Iterator fieldsIter = fields.iterator();
         if (fields != null) {
             ControlField formatField;

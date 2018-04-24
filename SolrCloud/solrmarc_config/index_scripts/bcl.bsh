@@ -21,7 +21,7 @@ public Set getBkl(Record record) {
         DataField field = (DataField)it.next();
         Subfield type = field.getSubfield('2');
         Subfield value = field.getSubfield('a');
-        if (type != null && type.getData().contains("bcl") == true) {
+        if (type != null && (type.getData().contains("bcl") == true || type.getData().contains("bkl") == true)) {
             resultSet.add(value.getData());
         }
     }
@@ -37,7 +37,7 @@ public Set getBklNumber(Record record) {
         DataField field = (DataField)it.next();
         Subfield type = field.getSubfield('2');
         Subfield value = field.getSubfield('a');
-        if (type != null && type.getData().contains("bcl") == true) {
+        if (type != null && (type.getData().contains("bcl") == true || type.getData().contains("bkl") == true)) {
             resultSet.add(value.getData());
         }
     }
@@ -54,7 +54,7 @@ public Set getBklName(Record record) {
         Subfield type = field.getSubfield('2');
         Subfield value = field.getSubfield('9');
         if (type != null && value != null) {
-            if (type != null && type.getData().contains("bcl") == true) {
+            if (type != null && (type.getData().contains("bcl") == true || type.getData().contains("bkl") == true)) {
                 resultSet.add(value.getData());
             }
         }

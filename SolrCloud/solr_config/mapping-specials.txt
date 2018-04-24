@@ -1,7 +1,6 @@
 "++" => "plusplus"
 "+" => "plus"
 "--" => "minusminus"
-"-" => "minus"
 "?" => "question"
 ">>" => "gtgt"
 "<<" => "ltlt"

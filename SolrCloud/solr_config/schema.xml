@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
-<schema name="GBV Bibliographic Index" version="1.2">
+<schema name="GBV Bibliographic Index" version="7.2">
   <types>
     <fieldType name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
-    <fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="long" class="solr.LongPointField" positionIncrementGap="0"/>
     <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true" omitNorms="true"/>
     <fieldType name="textFacet" class="solr.TextField" sortMissingLast="true" omitNorms="true">
       <analyzer>
@@ -17,7 +17,7 @@
         <!-- this is just like textFacet but without punctuation stripping. -->
       </analyzer>
     </fieldType>
-    <fieldType name="text" class="solr.TextField" positionIncrementGap="100">
+    <fieldType name="text" class="solr.TextField" positionIncrementGap="100" termVectors="true">
       <analyzer type="index">
         <charFilter class="solr.MappingCharFilterFactory" mapping="mapping-specials.txt" />
         <tokenizer class="solr.ICUTokenizerFactory"/>
@@ -61,12 +61,12 @@
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
       </analyzer>
     </fieldType>
-    <fieldType name="textGer" class="solr.TextField" positionIncrementGap="100">
+    <fieldType name="textGer" class="solr.TextField" positionIncrementGap="100" termVectors="true">
       <analyzer type="index">
         <tokenizer class="solr.ICUTokenizerFactory"/>
         <filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1"/>
 <!--        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" enablePositionIncrements="true"/> -->
-        <filter class="solr.ICUFoldingFilterFactory"/>
+        <filter class="solr.GermanNormalizationFilterFactory"/>
         <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
         <filter class="solr.SnowballPorterFilterFactory" language="German2"/>
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
@@ -76,14 +76,14 @@
         <filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
         <filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="0" catenateNumbers="0" catenateAll="0" splitOnCaseChange="1"/>
 <!--        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" enablePositionIncrements="true"/> -->
-        <filter class="solr.ICUFoldingFilterFactory"/> 
+        <filter class="solr.GermanNormalizationFilterFactory"/> 
         <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
         <filter class="solr.SnowballPorterFilterFactory" language="German2"/>
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
       </analyzer>
     </fieldType>
     <!-- Text Field without Stemming and Synonyms -->
-    <fieldType name="textProper" class="solr.TextField" positionIncrementGap="100">
+    <fieldType name="textProper" class="solr.TextField" positionIncrementGap="100" termVectors="true">
       <analyzer type="index">
         <tokenizer class="solr.ICUTokenizerFactory"/>
         <filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0"/>
@@ -137,7 +137,7 @@
         <filter class="solr.LengthFilterFactory" min="1" max="100" />
       </analyzer>
     </fieldType>
-    <fieldType name="date" class="solr.TrieDateField" sortMissingLast="true" omitNorms="true" precisionStep="6"/>
+    <fieldType name="date" class="solr.DatePointField" sortMissingLast="true" omitNorms="true" docValues="true"/>
         <fieldType name="textSound" class="solr.TextField" positionIncrementGap="100">
       <analyzer type="index">
         <tokenizer class="solr.ICUTokenizerFactory"/>
@@ -145,7 +145,7 @@
 <!--        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" enablePositionIncrements="true"/> -->
         <filter class="solr.ICUFoldingFilterFactory"/>
         <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
-        <filter class="solr.PhoneticFilterFactory" encoder="Soundex" inject="false"/>
+        <filter class="solr.BeiderMorseFilterFactory" nameType="GENERIC" ruleType="APPROX" concat="true" languageSet="auto"/>
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
       </analyzer>
       <analyzer type="query">
@@ -155,11 +155,12 @@
 <!--        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" enablePositionIncrements="true"/> -->
         <filter class="solr.ICUFoldingFilterFactory"/>
         <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
-        <filter class="solr.PhoneticFilterFactory" encoder="Soundex" inject="false"/>
+        <filter class="solr.BeiderMorseFilterFactory" nameType="GENERIC" ruleType="APPROX" concat="true" languageSet="auto"/>
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
       </analyzer>
     </fieldType>
     <fieldType name="geo" class="solr.SpatialRecursivePrefixTreeFieldType" distErrPct="0.025" maxDistErr="0.000009" distanceUnits="degrees" />
+    <fieldType name="geo2" class="solr.SpatialRecursivePrefixTreeFieldType" geo="true" distErrPct="0.025" maxDistErr="0.000009" distanceUnits="kilometers" />
   </types>
  <fields>
    <!-- SolrCloud -->
@@ -197,8 +198,9 @@
    <field name="title_sub" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="title_short" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="title_full" type="text" indexed="true" stored="true" multiValued="true"/>
-   <field name="title_full_unstemmed" type="textProper" indexed="true" stored="true" multiValued="true"/>
-   <field name="title_fullStr" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="title_full_unstemmed" type="textProper" indexed="true" stored="false" multiValued="true"/>
+   <field name="title_fullSound" type="textSound" indexed="true" stored="false" multiValued="true"/>
+   <field name="title_fullStr" type="string" indexed="true" stored="false" multiValued="true"/>
    <field name="title_auth" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="physical" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="publisher" type="textProper" indexed="true" stored="true" multiValued="true"/>
@@ -282,6 +284,7 @@
    <dynamicField name="*_txtP_mv" type="textProper" indexed="true" stored="true" multiValued="true"/>
    <dynamicField name="*_bool" type="string" indexed="true" stored="true"/>
    <dynamicField name="*_geo" type="geo" indexed="true" stored="true" multiValued="true" />
+   <dynamicField name="*_geo2" type="geo2" indexed="true" stored="true" multiValued="true" />
    <!-- Fields added by VZG -->
    <field name="fullrecord_marcxml" type="string" indexed="false" stored="true"/>
    <field name="collection_details" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
@@ -309,7 +312,7 @@
    <field name="allfieldsGer" type="textGer" indexed="true" stored="true"/>
    <field name="allfields_whitespace" type="textWhitespace" indexed="true" stored="false"/>
    <field name="titleGer" type="textGer" indexed="true" stored="true" multiValued="true"/>
-   <field name="title_fullGer" type="textGer" indexed="true" stored="true" multiValued="true"/>
+   <field name="title_fullGer" type="textGer" indexed="true" stored="false" multiValued="true"/>
    <field name="title_shortGer" type="textGer" indexed="true" stored="true" multiValued="true"/>
    <field name="title_altGer" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="abstractGer" type="textGer" indexed="true" stored="true" multiValued="true"/>
@@ -353,6 +356,7 @@
  <!-- CopyFields for Faceting on Text -->
  <copyField source="title_full" dest="title_fullStr"/>
  <copyField source="title_full" dest="title_full_unstemmed"/>
+ <copyField source="title_full" dest="title_fullSound"/>
  <copyField source="author" dest="authorStr"/>
  <copyField source="author2" dest="author2Str"/>
  <copyField source="author_additional" dest="author_additionalStr"/>
@@ -361,7 +365,6 @@
  <copyField source="allfields" dest="allfields_unstemmed"/>
  <copyField source="fulltext" dest="fulltext_unstemmed"/>
  <copyField source="fulltext" dest="fulltextGer"/>
- <copyField source="fulltext" dest="fulltextSound"/>
  <copyField source="author_browse" dest="author_facet"/>
  <!-- CopyFields for Alphabetic Browse -->
  <copyField source="topic"    dest="topic_browse"/>
@@ -379,4 +382,6 @@
  <copyField source="abstract" dest="abstractGer"/>
  <!-- no stemming -->
  <copyField source="abstract" dest="abstract_unstemmed"/>
+ <copyField source="signature" dest="signature_str_mv"/>
+ <copyField source="signature_iln" dest="signature_iln_str_mv"/>
 </schema>

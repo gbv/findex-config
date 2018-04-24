@@ -17,7 +17,8 @@
 -->
 
 <config>
-  <luceneMatchVersion>6.2</luceneMatchVersion>
+  <luceneMatchVersion>7.2</luceneMatchVersion>
+  <schemaFactory class="ClassicIndexSchemaFactory"/>
   <!-- Set this to 'false' if you want solr to continue working after it has 
        encountered an severe configuration error.  In a production environment, 
        you may want solr to keep working even if one handler is mis-configured.
@@ -399,6 +400,23 @@
     </lst>
   </requestHandler>
 
+  <requestHandler name="/spell" class="solr.SearchHandler" startup="lazy">
+    <lst name="defaults">
+      <str name="spellcheck.dictionary">basicSpell</str> 
+      <str name="spellcheck">on</str>
+      <str name="spellcheck.extendedResults">true</str> 
+      <str name="spellcheck.count">10</str>
+      <str name="spellcheck.maxResultsForSuggest">5</str> 
+      <str name="spellcheck.collate">true</str>
+      <str name="spellcheck.collateExtendedResults">true</str> 
+      <str name="spellcheck.maxCollationTries">10</str>
+      <str name="spellcheck.maxCollations">5</str> 
+    </lst>
+    <arr name="last-components">
+      <str>spellcheck</str>
+    </arr>
+  </requestHandler>
+
   <searchComponent name="spellcheck" class="org.apache.solr.handler.component.SpellCheckComponent">
     <str name="queryAnalyzerFieldType">textSpell</str>
     <lst name="spellchecker">
@@ -592,10 +610,84 @@
    <processor class="solr.TimestampUpdateProcessorFactory">
     <str name="fieldName">up_date</str>
    </processor>
+    <processor class="org.apache.solr.update.processor.SignatureUpdateProcessorFactory">
+      <bool name="enabled">true</bool>
+      <str name="signatureField">TextProfileHash_tf_a_s_pD_pP_str</str>
+      <bool name="overwriteDupes">false</bool>
+      <str name="fields">title_full,author,author2,source,publishDate,publishPlace</str>
+      <str name="signatureClass">org.apache.solr.update.processor.TextProfileSignature</str>
+      <str name="quantRate">.00001</str>
+      <str name="minTokenLen">1</str>
+    </processor>
+    <processor class="org.apache.solr.update.processor.SignatureUpdateProcessorFactory">
+      <bool name="enabled">true</bool>
+      <str name="signatureField">L3SHash_tf_a_s_pD_pP_str</str>
+      <bool name="overwriteDupes">false</bool>
+      <str name="fields">title_full,author,author2,source,publishDate,publishPlace</str>
+      <str name="signatureClass">org.apache.solr.update.processor.Lookup3Signature</str>
+      <str name="quantRate">.01</str>
+      <str name="minTokenLen">1</str>
+    </processor>
+    <processor class="org.apache.solr.update.processor.SignatureUpdateProcessorFactory">
+      <bool name="enabled">true</bool>
+      <str name="signatureField">TextProfileHash_t_a_j_pD_pP_str</str>
+      <bool name="overwriteDupes">false</bool>
+      <str name="fields">title,author,author2,journal,publishDate,publishPlace</str>
+      <str name="signatureClass">org.apache.solr.update.processor.TextProfileSignature</str>
+      <str name="quantRate">.00001</str>
+      <str name="minTokenLen">1</str>
+    </processor>
+    <processor class="org.apache.solr.update.processor.SignatureUpdateProcessorFactory">
+      <bool name="enabled">true</bool>
+      <str name="signatureField">L3SHash_t_a_j_pD_pP_str</str>
+      <bool name="overwriteDupes">false</bool>
+      <str name="fields">title,author,author2,journal,publishDate,publishPlace</str>
+      <str name="signatureClass">org.apache.solr.update.processor.Lookup3Signature</str>
+      <str name="quantRate">.01</str>
+      <str name="minTokenLen">1</str>
+    </processor>
+    <processor class="org.apache.solr.update.processor.SignatureUpdateProcessorFactory">
+      <bool name="enabled">true</bool>
+      <str name="signatureField">TextProfileHash_t_a_str</str>
+      <bool name="overwriteDupes">false</bool>
+      <str name="fields">title,author,author2</str>
+      <str name="signatureClass">org.apache.solr.update.processor.TextProfileSignature</str>
+      <str name="quantRate">.00001</str>
+      <str name="minTokenLen">1</str>
+    </processor>
+    <processor class="org.apache.solr.update.processor.SignatureUpdateProcessorFactory">
+      <bool name="enabled">true</bool>
+      <str name="signatureField">L3SHash_t_a_str</str>
+      <bool name="overwriteDupes">false</bool>
+      <str name="fields">title,author,author2</str>
+      <str name="signatureClass">org.apache.solr.update.processor.Lookup3Signature</str>
+      <str name="quantRate">.01</str>
+      <str name="minTokenLen">1</str>
+    </processor>
+    <processor class="org.apache.solr.update.processor.SignatureUpdateProcessorFactory">
+      <bool name="enabled">true</bool>
+      <str name="signatureField">TextProfileHash_tf_str</str>
+      <bool name="overwriteDupes">false</bool>
+      <str name="fields">title_full</str>
+      <str name="signatureClass">org.apache.solr.update.processor.TextProfileSignature</str>
+      <str name="quantRate">.00001</str>
+      <str name="minTokenLen">1</str>
+    </processor>
+    <processor class="org.apache.solr.update.processor.SignatureUpdateProcessorFactory">
+      <bool name="enabled">true</bool>
+      <str name="signatureField">L3SHash_tf_str</str>
+      <bool name="overwriteDupes">false</bool>
+      <str name="fields">title_full</str>
+      <str name="signatureClass">org.apache.solr.update.processor.Lookup3Signature</str>
+      <str name="quantRate">.01</str>
+      <str name="minTokenLen">1</str>
+    </processor>
    <processor class="solr.LogUpdateProcessorFactory" />
    <processor class="solr.RunUpdateProcessorFactory" />
   </updateRequestProcessorChain>
 
+  <!-- fix for http://lucene.472066.n3.nabble.com/Re-Several-critical-vulnerabilities-discovered-in-Apache-Solr-XXE-amp-RCE-td4358308.html -->
+  <queryParser name="xmlparser" class="solr.ExtendedDismaxQParserPlugin" />
   
   <!-- queryResponseWriter plugins... query responses will be written using the
     writer specified by the 'wt' request parameter matching the name of a registered
