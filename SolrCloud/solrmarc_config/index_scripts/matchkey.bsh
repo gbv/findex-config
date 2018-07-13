@@ -1,0 +1,123 @@
+import org.marc4j.marc.Record;
+import org.marc4j.marc.ControlField;
+import org.marc4j.marc.Subfield;
+import org.marc4j.marc.DataField;
+import org.marc4j.marc.VariableField;
+
+import org.solrmarc.index.GetFormatMixin;
+import org.solrmarc.index.SolrIndexer;
+import org.solrmarc.tools.Utils;
+
+
+source("/home/solr/solrmarc/index_scripts/format.bsh");
+source("/home/solr/solrmarc/index_scripts/isbn.bsh");
+source("/home/solr/solrmarc/index_scripts/getdate.bsh");
+
+public String matchkeyMaterialISBNYear(Record record) {
+      String material = getFormatVZGEng(record);
+      String isbn = matchkeyISBN(record);
+      // TODO: for serials, journals... get start and end year
+      String pubdate = matchkeygetDate(record);
+      String matchkey = "";
+      switch (material) {
+          case "Book":
+          case "eBook":
+              material = "book";
+              String isbn = matchkeyISBN(record);
+              if (!isbn.isEmpty()) matchkey = material + ":" + isbn + ":" + pubdate;
+              return matchkey;
+         case "Journal":
+         case "eJournal":
+              material = "journal";
+              String issn = matchkeyISSN(record);
+              if (!issn.isEmpty()) matchkey = material + ":" + issn + ":" + pubdate;
+              return matchkey;
+         case "Article":
+         case "electronic Article":
+              material = "article";
+              String issn = matchkeyISSN(record);
+              String enumeration = matchkeyEnum(record);
+              String titlekey = matchkeyTitlekey(record);
+              if (!issn.isEmpty()) matchkey = material + ":" + issn + ":" + pubdate + ":" + enumeration + ":" + titlekey;
+              return matchkey;
+       }
+       return matchkey;
+}
+
+public String matchkeyISBN(Record record) {
+      Set isbns = getISBN1013(record);
+      Iterator i = isbns.iterator();
+      while (i.hasNext()) {
+          isbn = i.next();
+          if (isbn.length() == 13) return isbn;
+      }
+      return "";
+   }
+
+public String matchkeyISSN(Record record) {
+        List fields = record.getVariableFields("022");
+        Iterator i = fields.iterator();
+        while (i.hasNext()) {
+            field = (DataField)i.next();
+            issnfield = field.getSubfield('a');
+            if (issnfield != null) {
+                issn = cleanISSN(issnfield.getData());
+                return issn;
+            }
+        }
+        fields = record.getVariableFields("773");
+        i = fields.iterator();
+        while (i.hasNext()) {
+            field = (DataField)i.next();
+            issnfield = field.getSubfield('x');
+            if (issnfield != null) {
+                issn = cleanISSN(issnfield.getData());
+                return issn;
+            }
+        }
+    return "";
+}
+
+public String cleanISSN(String dirtyissn) {
+    cleanissn = dirtyissn.replaceAll("[^0-9Xx]", "").replaceAll("\\s+.*$", "");
+    return cleanissn;
+}
+
+public String matchkeyEnum(Record record) {
+        List fields = record.getVariableFields("773");
+        Iterator i = fields.iterator();
+        while (i.hasNext()) {
+            field = (DataField)i.next();
+            enumfield = field.getSubfield('q');
+            if (enumfield != null) {
+                return enumfield.getData();
+            }
+        }
+        return "";
+}
+
+
+public String matchkeygetDate(Record record) {
+    ControlField fixedField = (ControlField) record.getVariableField("008");
+    if (fixedField != null) {
+        return fixedField.getData().replaceAll(" ","-").substring(7,15);
+    }
+    return "";
+}
+
+public String matchkeyTitlekey(Record record) {
+    String titlekey = "";
+    DataField titlefield = record.getVariableField("245");
+    if (titlefield != null) {
+        titlef = titlefield.getSubfield('a');
+        if (title != null) {
+            String title = titlef.getData().replaceAll("[\\W]","").toLowerCase().trim();
+            for (int i=0; i<(title.length() / 4) *3; i++) {
+                if ((i & 1) != 0) {
+                    titlekey = titlekey + title.charAt(i);
+                }
+            }    
+        }
+    }
+    return titlekey;
+}

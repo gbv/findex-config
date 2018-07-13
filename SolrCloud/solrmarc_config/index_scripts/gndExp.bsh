@@ -1,0 +1,72 @@
+import org.marc4j.marc.Record;
+import org.marc4j.marc.ControlField;
+import org.marc4j.marc.Subfield;
+import org.marc4j.marc.DataField;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.*;
+
+Set getGNDterms(Record record)
+{
+    Set result = new LinkedHashSet();
+    Set gndIdsSet = getGNDLinks(record);
+    Iterator gndIds = gndIdsSet.iterator();
+    while (gndIds.hasNext()) {
+        String gndId = gndIds.next();
+        URL lobidURL = new URL("http://lobid.org/gnd/" + gndId + ".json");
+        URLConnection request = lobidURL.openConnection();
+        JsonParser jp = new JsonParser();
+        JsonElement root = new JsonObject();
+        try {
+            root = jp.parse(new InputStreamReader((InputStream) request.getContent()));
+        } catch(Exception e) {
+            return result;
+        }
+        JsonObject rootobj = root.getAsJsonObject();
+        if (rootobj.has("variantName")) {
+            if (rootobj.get("variantName").isJsonArray()) {
+                JsonArray variantNames = rootobj.getAsJsonArray("variantName");
+                if (variantNames != null) {
+                    Iterator NameIterator = variantNames.iterator();
+                    while (NameIterator.hasNext()) {
+                        JsonElement variantName = NameIterator.next();
+                        result.add(variantName.getAsString());
+                    }
+                }
+            }
+            if (rootobj.get("variantName").isJsonPrimitive()) {
+                result.add(rootobj.get("variantName").getAsString());
+            }
+        }
+        if (rootobj.has("preferredName")) {
+           if (rootobj.get("preferredName").isJsonPrimitive()){
+               result.add(rootobj.get("preferredName").getAsString());
+           }
+        }
+    }
+    return result;
+}
+
+
+Set getGNDLinks(Record record)
+    {
+
+        Set result = new LinkedHashSet();
+
+        List fields = record.getDataFields();
+        for (DataField field : fields)
+        {
+          List sf = field.getSubfields('0');
+          Iterator i = sf.iterator();
+          while (i.hasNext()) {
+            Subfield ppnlink = (Subfield)i.next();
+            String ppn = ppnlink.getData();
+            if (ppn.matches("\\(DE-588\\)(.*)")) {
+                ppn = ppn.toUpperCase().replaceAll("\\(DE-\\d{3}\\)", "");
+                result.add(ppn);
+            }
+          }
+        }
+        return result;
+    }
