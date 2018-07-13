@@ -341,6 +341,7 @@ public String getFormatVZG(Record record) {
   leaderBit6 = leader.charAt(6);
   leaderBit7 = leader.charAt(7);
   List fields = record.getVariableFields("007");
+  ControlField fixedField = (ControlField) record.getVariableField("008");
   Iterator fieldsIter = fields.iterator();
 
   List field902 = record.getVariableFields("951");
@@ -408,6 +409,19 @@ public String getFormatVZG(Record record) {
                   }
               }
           }
+          formatCode = fixedField.getData().toUpperCase().charAt(21);
+          switch (formatCode) {
+              case 'N':
+                  return "Zeitschriften";
+                  break;
+              case 'P':
+                  return "Zeitschriften";
+                  break;
+              default:
+                  return "Serie";
+                  break;
+            }
+
           return "Zeitschriften";
           break;
         // sepc sagt S für Aufsätze?!? -> Fehler?
@@ -599,7 +613,7 @@ public String getFormatVZGEng(Record record) {
   leaderBit7 = leader.charAt(7);
   List fields = record.getVariableFields("007");
   Iterator fieldsIter = fields.iterator();
-
+  ControlField fixedField = (ControlField) record.getVariableField("008");
   List field902 = record.getVariableFields("951");
   Iterator field902Iter = field902.iterator();
 
@@ -664,6 +678,19 @@ public String getFormatVZGEng(Record record) {
                   }
               }
           }
+          formatCode = fixedField.getData().toUpperCase().charAt(21);
+          switch (formatCode) {
+              case 'N':
+                  return "Journal";
+                  break;
+              case 'P':
+                  return "Journal";
+                  break;
+              default:
+                  return "Serial Volume";
+                  break;
+            }
+
           return "Journal";
           break;
         // sepc sagt S für Aufsätze?!? -> Fehler?

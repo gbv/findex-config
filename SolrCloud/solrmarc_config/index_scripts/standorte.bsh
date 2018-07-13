@@ -251,3 +251,58 @@ public Set getLastChangedILN(Record record) {
     }
     return result;
 }
+
+public Set getAbrufzeichen(Record record) {
+    Set result = new LinkedHashSet();
+    String cl = "";
+
+    List holdings = record.getVariableFields("995");
+    Iterator fieldsIter = holdings.iterator();
+    if (holdings != null) {
+        DataField holdingField;
+        while(fieldsIter.hasNext()) {
+             String holding = "";
+             holdingField = (DataField) fieldsIter.next();
+
+             if (holdingField != null) {
+                 if (holdingField.getSubfield('2') != null) {
+                     holding = holdingField.getSubfield('2').getData();
+                 }
+                 if (holdingField.getSubfield('a') != null) {
+                     cl = holdingField.getSubfield('a').getData();
+                     result.add(holding + "@" + cl);
+                 }
+                 cl = "";
+             }
+        }
+    }
+    return result;
+}
+
+public Set getSelektNeu(Record record) {
+    Set result = new LinkedHashSet();
+    String cl = "";
+
+    List holdings = record.getVariableFields("998");
+    Iterator fieldsIter = holdings.iterator();
+    if (holdings != null) {
+        DataField holdingField;
+        while(fieldsIter.hasNext()) {
+             String holding = "";
+             holdingField = (DataField) fieldsIter.next();
+
+             if (holdingField != null) {
+                 if (holdingField.getSubfield('2') != null) {
+                     holding = holdingField.getSubfield('2').getData();
+                 }
+                 if (holdingField.getSubfield('0') != null) {
+                     cl = holdingField.getSubfield('0').getData();
+                     result.add(holding + "@" + cl);
+                 }
+                 cl = "";
+             }
+        }
+    }
+    return result;
+}
+
