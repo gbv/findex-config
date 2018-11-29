@@ -21,7 +21,7 @@ Set getGNDterms(Record record)
         try {
             root = jp.parse(new InputStreamReader((InputStream) request.getContent()));
         } catch(Exception e) {
-            return result;
+            continue;
         }
         JsonObject rootobj = root.getAsJsonObject();
         if (rootobj.has("variantName")) {
