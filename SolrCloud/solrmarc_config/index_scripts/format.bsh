@@ -2,6 +2,7 @@ import org.marc4j.marc.Record;
 import org.marc4j.marc.ControlField;
 import org.marc4j.marc.Subfield;
 import org.marc4j.marc.DataField;
+import org.marc4j.marc.VariableField;
 
 org.solrmarc.index.SolrIndexer indexer = null;
 
@@ -380,6 +381,7 @@ public String getFormatVZG(Record record) {
     case 'A':
       switch (Character.toUpperCase(leaderBit7)) {
         case 'M':
+        case 'I':
           if (fields != null) {
               fieldsIter = fields.iterator();
               while (fieldsIter.hasNext()) {
@@ -394,10 +396,13 @@ public String getFormatVZG(Record record) {
           return "Bücher";
           break;
         case 'B':
-        case 'D':
+          return "Aufsätze";
+          break;
+        case 'D':                                          
           return "Zeitschriftenbände";
           break;
         case 'S':
+        case 'I':
           if (fields != null) {
               fieldsIter = fields.iterator();
               while (fieldsIter.hasNext()) {
@@ -426,6 +431,7 @@ public String getFormatVZG(Record record) {
           break;
         // sepc sagt S für Aufsätze?!? -> Fehler?
         case 'A':
+        case 'B':
           if (field902 != null) {
             Iterator field902Iter = field902.iterator();
             while (field902Iter.hasNext()) {
@@ -460,7 +466,6 @@ public String getFormatVZG(Record record) {
     case 'M':
       switch (Character.toUpperCase(leaderBit7)) {
          case 'M':
-         case 'B':
            if (fields != null) {
               fieldsIter = fields.iterator();
               while (fieldsIter.hasNext()) {
@@ -471,7 +476,35 @@ public String getFormatVZG(Record record) {
                     return "Elektronische Bücher";
                     break;
                   }
-                  else if (fCode == 'U') {
+                  else if (fField.getData().toUpperCase().charAt(0) == 'C') {
+                    return "Datenträger";
+                    break;
+                  }
+/* auskommentiert, 13.04.2016. co ist eigentlich ein
+   optischer Datenträger; unklar, warum diese Regel
+   2014 eingeführt wurde; bis zu einer besseren
+   Spezifikation erstmal wieder co->elektronische Ressource
+                  else if (fCode == 'O') {
+                    return "Bücher";
+                    break;
+                  } */
+                }
+              }
+            }
+           return "Elektronische Ressource";
+           break;
+         case 'B':
+           if (fields != null) {
+              fieldsIter = fields.iterator();
+              while (fieldsIter.hasNext()) {
+                fField = (ControlField) fieldsIter.next();
+                if(fField.getData().length() > 1) {
+                  fCode = fField.getData().toUpperCase().charAt(1);
+                  if (fCode == 'R') {
+                    return "Elektronische Aufsätze";
+                    break;
+                  }
+                  else if (fField.getData().toUpperCase().charAt(0) == 'C') {
                     return "Datenträger";
                     break;
                   }
@@ -489,9 +522,11 @@ public String getFormatVZG(Record record) {
            return "Elektronische Ressource";
            break;
          case 'S':
+         case 'I':
            return "Elektronische Zeitschriften";
            break;
          case 'A':
+         case 'B':
            return "Elektronische Aufsätze";
            break;
 //         default:
@@ -649,6 +684,7 @@ public String getFormatVZGEng(Record record) {
     case 'A':
       switch (Character.toUpperCase(leaderBit7)) {
         case 'M':
+        case 'I':
           if (fields != null) {
               fieldsIter = fields.iterator();
               while (fieldsIter.hasNext()) {
@@ -663,10 +699,13 @@ public String getFormatVZGEng(Record record) {
           return "Book";
           break;
         case 'B':
+          return "Article";
+          break;
         case 'D':
           return "Serial Volume";
           break;
         case 'S':
+        case 'I':
           if (fields != null) {
               fieldsIter = fields.iterator();
               while (fieldsIter.hasNext()) {
@@ -695,6 +734,7 @@ public String getFormatVZGEng(Record record) {
           break;
         // sepc sagt S für Aufsätze?!? -> Fehler?
         case 'A':
+        case 'B':
           if (field902 != null) {
             Iterator field902Iter = field902.iterator();
             while (field902Iter.hasNext()) {
@@ -729,7 +769,6 @@ public String getFormatVZGEng(Record record) {
     case 'M':
       switch (Character.toUpperCase(leaderBit7)) {
          case 'M':
-         case 'B':
            if (fields != null) {
               fieldsIter = fields.iterator();
               while (fieldsIter.hasNext()) {
@@ -740,7 +779,27 @@ public String getFormatVZGEng(Record record) {
                     return "eBook";
                     break;
                   }
-                  else if (fCode == 'U') {
+                  else if (fField.getData().toUpperCase().charAt(0) == 'C') {
+                    return "Data Media";
+                    break;
+                  }
+                }
+              }
+           }
+           return "electronic Resource";
+           break;
+         case 'B':
+           if (fields != null) {
+              fieldsIter = fields.iterator();
+              while (fieldsIter.hasNext()) {
+                fField = (ControlField) fieldsIter.next();
+                if(fField.getData().length() > 1) {
+                  fCode = fField.getData().toUpperCase().charAt(1);
+                  if (fCode == 'R') {
+                    return "electronic Article";
+                    break;
+                  }
+                  else if (fField.getData().toUpperCase().charAt(0) == 'C') {
                     return "Data Media";
                     break;
                   }
@@ -758,9 +817,11 @@ public String getFormatVZGEng(Record record) {
            return "electronic Resource";
            break;
          case 'S':
+         case 'I':
            return "eJournal";
            break;
          case 'A':
+         case 'B':
            return "electronic Article";
            break;
 //         default:
@@ -839,17 +900,19 @@ public String remote(Record record)
     List fields = record.getVariableFields("007");
     String leader = record.getLeader().toString();
 //System.out.println("Leader: " + leader + " 67:" + leader.toUpperCase().charAt(6) + leader.toUpperCase().charAt(7));
-    if ((leader.toUpperCase().charAt(6) == 'M' || leader.toUpperCase().charAt(6) == 'A') && (leader.toUpperCase().charAt(7) == 'A' || leader.toUpperCase().charAt(7) == 'M' || leader.toUpperCase().charAt(7) == 'S')) {
+    if ((leader.toUpperCase().charAt(6) == 'M' || leader.toUpperCase().charAt(6) == 'A') && (leader.toUpperCase().charAt(7) == 'A' || leader.toUpperCase().charAt(7) == 'M' || leader.toUpperCase().charAt(7) == 'S' || leader.toUpperCase().charAt(7) == 'B' || leader.toUpperCase().charAt(7) == 'I')) {
         Iterator fieldsIter = fields.iterator();
         if (fields != null) {
             ControlField formatField;
             String formatFieldStr = "";
             while(fieldsIter.hasNext()) {
                 formatField = (ControlField) fieldsIter.next();
-                char formatCode = formatField.getData().toUpperCase().charAt(0);
-                char formatCode2 = formatField.getData().toUpperCase().charAt(1);
-                if (formatCode == 'C' && formatCode2 == 'R') {
-                    return "true";
+                if (formatField.getData().length() > 1) {
+                    char formatCode = formatField.getData().toUpperCase().charAt(0);
+                    char formatCode2 = formatField.getData().toUpperCase().charAt(1);
+                    if (formatCode == 'C' && formatCode2 == 'R') {
+                        return "true";
+                    }
                 }
             }
         }
@@ -862,6 +925,85 @@ public String hochschulschrift(Record record)
     List fields = record.getVariableFields("502");
     if (!fields.isEmpty()) {
         return "true";
+    }
+    return "false";
+}
+
+public String isOA(Record record)
+{
+    List list856 = record.getVariableFields("856");
+    for (VariableField vf : list856)
+    {
+        DataField df = (DataField) vf;
+        String currentString = "";
+        for (Subfield current : df.getSubfields('z')) {
+            if (current.getData().trim().equals("OALizenz") || current.getData().trim().equals("Open Access-Lizenzbedingungen") || current.getData().trim().equals("OA") || current.getData().trim().startsWith("OpenAccess Lizenz")) {
+               return "true";
+            }
+         
+        }
+    }
+
+    List list981 = record.getVariableFields("981");
+    for (VariableField vf : list981)
+    {   
+        DataField df = (DataField) vf;
+        String currentString = "";
+        for (Subfield current : df.getSubfields('y')) { 
+            if (current.getData().trim().equals("OALizenz") || current.getData().trim().equals("Open Access-Lizenzbedingungen") || current.getData().trim().equals("OA") || current.getData().trim().startsWith("OpenAccess Lizenz")) {
+               return "true";
+            }
+         
+        }
+    }
+    return "false";
+}
+
+public String isFreeBeer(Record record)
+{
+    if (isOA(record).equals("true")) {
+        return "true";
+    }
+    String remote = "false";
+    List list856 = record.getVariableFields("856");
+    if (remote(record).equals("true")) {
+        remote = "true";
+    } else {
+        for (VariableField vf : list856) {
+            DataField df = (DataField) vf;
+            for (Subfield current : df.getSubfields('3')) {
+                if (current.getData().trim().equals("Volltext")) {
+                    remote = "true";
+                }
+            }
+        }
+
+    }
+    if (remote.equals("true")) {
+        for (VariableField vf : list856)
+        {
+            DataField df = (DataField) vf;
+            String currentString = "";
+            for (Subfield current : df.getSubfields('z')) {
+                if (current.getData().trim().equals("LF") || current.getData().trim().equals("KF") || current.getData().trim().startsWith("Kostenfrei")) {
+                   return "true";
+                }
+
+            }
+        }
+
+        List list981 = record.getVariableFields("981");
+        for (VariableField vf : list981)
+        {
+            DataField df = (DataField) vf;
+            String currentString = "";
+            for (Subfield current : df.getSubfields('y')) {
+                if (current.getData().trim().equals("LF") || current.getData().trim().equals("KF")) {
+                   return "true";
+                }
+
+            }
+        }
     }
     return "false";
 }
