@@ -1,0 +1,36 @@
+/**
+ * Custom script to get latitude and longitude coordinates.
+ * Records can have multiple coordinates sets
+ * of points and/or rectangles.
+ * Points are represented by coordinate sets where N=S E=W.
+ *
+ * code adapted from xrosecky - Moravian Library
+ * https://github.com/moravianlibrary/VuFind-2.x/blob/master/import/index_scripts/geo.bsh
+ * and incorporates VuFind location.bsh functionality for GoogleMap display.
+ *
+ */
+
+import org.solrmarc.tools.Utils;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.marc4j.marc.*;
+
+/**
+ * Get collections the record belongs to
+ *
+ * @param  Record    record
+ * @return Set       collections
+ */
+public Set getCollections(Record record) {
+    Set result = new LinkedHashSet();
+    String mapName = indexer.loadTranslationMap("collections.properties");
+    Set values = indexer.getFieldList(record, "912a");
+    for (String collcode : values) {
+        String collection = Utils.remap(collcode, indexer.findMap(mapName), true);
+        if (collection != null) result.add(collection);
+    }
+    if (result.isEmpty()) {
+        result.add("GVK");
+    }
+    return result;
+}
