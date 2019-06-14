@@ -550,6 +550,10 @@ public String getFormatVZG(Record record) {
        return "Tonträger";
        break;
 
+    case 'G':
+       return "Projiziertes Medium";
+       break;
+
     case 'R':
       switch (Character.toUpperCase(leaderBit7)) {
          case 'A':
@@ -843,6 +847,10 @@ public String getFormatVZGEng(Record record) {
     case 'I':
     case 'J':
        return "Sound Recording";
+       break;
+
+   case 'G':
+       return "Projected Medium";
        break;
 
     case 'R':
