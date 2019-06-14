@@ -19,7 +19,8 @@ import java.io.*;
 // note that the SolrIndexer code will set this value before the script methods are called.
 org.solrmarc.index.SolrIndexer indexer = null;
 
-private static final Pattern BOX_PATTERN = Pattern.compile("\\((.+)--(.+)\\/(.+)--(.+)\\)\\.");
+// private static final Pattern BOX_PATTERN = Pattern.compile("\\((.+)--(.+)\\/(.+)--(.+)\\)\\.");
+private static final Pattern BOX_PATTERN = Pattern.compile("(.+)-(.+)\\/(.+)-(.+)");
 private static final Pattern COORDINATES_PATTERN = Pattern.compile("^([eEwWnNsS]) (\\d{3}) (\\d{2})");
 
 Set getAllCoordinates(Record record) {
@@ -32,9 +33,13 @@ Set getAllCoordinates(Record record) {
                  coordF = f255.getSubfield('c');
                  if (coordF != null) {
                      HashMap coord = getCoordinates(coordF.getData());
-                     if (!coord.get('w').isNaN() && !coord.get('o').isNaN() && !coord.get('n').isNaN() && !coord.get('s').isNaN()) {
-                         String coordstring = String.format("ENVELOPE(%s,%s,%s,%s)", new Object[] { coord.get('w'), coord.get('o'), coord.get('n'), coord.get('s') });
-                         result.add(coordstring);
+                     if (coord != null) {
+                         if (coord.get('w') != null && coord.get('o') != null && coord.get('n') != null && coord.get('s') != null) {
+                             if (!coord.get('w').isNaN() && !coord.get('o').isNaN() && !coord.get('n').isNaN() && !coord.get('s').isNaN()) {
+                                 String coordstring = String.format("ENVELOPE(%s,%s,%s,%s)", new Object[] { coord.get('w'), coord.get('o'), coord.get('n'), coord.get('s') });
+                                 result.add(coordstring);
+                             }
+                         }
                      }
                  }
             }

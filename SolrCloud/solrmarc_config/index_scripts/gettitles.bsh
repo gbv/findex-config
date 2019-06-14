@@ -1,0 +1,35 @@
+/**
+ * Custom date script.
+ *
+ * This can be used to override built-in SolrMarc custom functions.  If you change
+ * this script, you will need to activate it in import/marc_local.properties before
+ * it will be applied during indexing.
+ */
+import org.marc4j.marc.*;
+
+/**
+ * Get alternative titles for display
+ *
+ * @param  Record          record
+ * @return Set             alternative titles
+ */
+public Set getAltTitlesForDisplay(Record record) {
+    Set titles = new LinkedHashSet();
+
+    List list246 = record.getVariableFields("246");
+    for (VariableField vf : list246)
+    {
+        DataField df = (DataField) vf;
+        String currentString = "";
+        if (df.getIndicator1() == '1' && (df.getIndicator2() == '1' || df.getIndicator2() == '3')) {
+            for (Subfield current : df.getSubfields()) {
+                currentString = currentString.trim().concat(" " + current.getData()).trim();
+            }
+            if (currentString.length() > 0) {
+                titles.add(currentString);
+            }
+        }
+    }
+
+    return titles; 
+}
