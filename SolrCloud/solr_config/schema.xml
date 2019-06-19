@@ -344,6 +344,12 @@
    <field name="is_hierarchy_title" type="string" indexed="true" stored="true" multiValued="false"/>
    <field name="title_in_hierarchy" type="string" indexed="true" stored="true" multiValued="true" />
    <field name="hierarchy_browse" type="textFacetRaw" indexed="true" stored="false" multiValued="true"/>
+   <!-- Container fields (i.e. for describing journal containing an article) -->
+   <field name="container_title" type="text" indexed="true" stored="true"/>
+   <field name="container_volume" type="text" indexed="true" stored="true"/>
+   <field name="container_issue" type="text" indexed="true" stored="true"/>
+   <field name="container_start_page" type="text" indexed="true" stored="true"/>
+   <field name="container_reference" type="text" indexed="true" stored="true"/>
  </fields>
  <uniqueKey>id</uniqueKey>
  <!-- CopyFields for Spelling -->
