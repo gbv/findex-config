@@ -183,7 +183,7 @@ public Set getDates(Record record)
 
 public String getStartpage(Record record)
 {
-    Pattern SPAGE_PATTERN = Pattern.compile("^(\\d{1,})");
+    Pattern SPAGE_PATTERN = Pattern.compile("^(\\d{1,}).*");
     Set pages = SolrIndexer.getFieldList(record, "952h"); 
     for (String page : pages) {
         Matcher PAGEmatcher = SPAGE_PATTERN.matcher(page);
