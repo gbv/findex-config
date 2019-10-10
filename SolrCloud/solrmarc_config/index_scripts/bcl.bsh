@@ -50,14 +50,36 @@ public Set getBklName(Record record) {
     Iterator it = fields.iterator();
 
     while (it.hasNext()) {
-        DataField field = (DataField)it.next();
+       DataField field = (DataField)it.next();
         Subfield type = field.getSubfield('2');
-        Subfield value = field.getSubfield('9');
-        if (type != null && value != null) {
+        List values = field.getSubfields('9');
+        if (type != null && values != null) {
             if (type != null && (type.getData().contains("bcl") == true || type.getData().contains("bkl") == true)) {
-                resultSet.add(value.getData());
+                Iterator valueIter = values.iterator();
+                while (valueIter.hasNext()) {
+                    resultSet.add(valueIter.next().getData());
+                }
             }
         }
     }
+
+    List fields = record.getVariableFields("936");
+    Iterator it = fields.iterator();
+
+    while (it.hasNext()) {
+        DataField field = (DataField)it.next();
+//        Subfield type = field.getSubfield('2'); // TODO: Subfield prüfen!
+        String type = field.getIndicator1().toString() + field.getIndicator2().toString();
+        List values = field.getSubfields('j'); // TODO: Subfield prüfen!
+        if (type != null && values != null) {
+            if (type != null && type.equals("bk")) {
+                Iterator valueIter = values.iterator();
+                while (valueIter.hasNext()) {
+                    resultSet.add(valueIter.next().getData());
+                }
+            }
+        }
+    }
+
     return resultSet;
 }

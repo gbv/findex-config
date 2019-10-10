@@ -323,7 +323,6 @@
      <str name="spellcheck.extendedResults">true</str>
      <str name="spellcheck.onlyMorePopular">true</str>
      <str name="spellcheck.count">20</str>
-     <str name="timeAllowed">16000</str>
      <str name="q.op">AND</str>
      <str name="df">allfields</str>
     </lst>

@@ -40,6 +40,18 @@ Set get016Links(Record record)
                 }
             }
         }
+/*        List fields = record.getVariableFields("035");
+        if (fields != null) {
+            Iterator fieldsIter = fields.iterator();
+            while(fieldsIter.hasNext()) {
+                field = (DataField)fieldsIter.next();
+                linkfield = field.getSubfield('a');
+                if (linkfield != null)  {
+                    result.add(linkfield.getData().replaceAll("[^0-9a-zA-z()]",""));
+                }
+            }
+
+        } */
         return result;
     }
 

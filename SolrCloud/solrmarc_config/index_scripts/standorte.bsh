@@ -108,8 +108,11 @@ public Set getSignaturILN(Record record){
                  if (holdingField.getSubfield('2') != null) {
                      holding = holdingField.getSubfield('2').getData();
                  }
-                 if (holdingField.getSubfield('d') != null) {
-                     location = holdingField.getSubfield('d').getData();
+                 List sigs = holdingField.getSubfields('d');
+                 Iterator i = sigs.iterator();
+                 while (i.hasNext()) {
+                     Subfield sig = (Subfield)i.next();
+                     location = sig.getData();
                      holding = holding + ":" + location;
                  }
                  result.add(holding);
@@ -223,6 +226,16 @@ public Set getDOI(Record record) {
         }
     }
     return result;
+}
+
+public String getDOI(Record record, String first_only) {
+    Set dois = getDOI(record);
+    if (first_only.equals("first")) {
+        if (!dois.isEmpty()) {
+           return dois.iterator().next();
+        }
+    }
+    return null;
 }
 
 public Set getLastChangedILN(Record record) {
