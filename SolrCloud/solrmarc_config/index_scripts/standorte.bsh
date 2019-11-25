@@ -112,10 +112,10 @@ public Set getSignaturILN(Record record){
                  Iterator i = sigs.iterator();
                  while (i.hasNext()) {
                      Subfield sig = (Subfield)i.next();
-                     location = sig.getData();
-                     holding = holding + ":" + location;
+                     location = sig.getData(); 
+                     ilnsig = holding + ":" + location;
+                     result.add(ilnsig);
                  }
-                 result.add(holding);
              }
         }
     }
