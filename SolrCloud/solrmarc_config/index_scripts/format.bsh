@@ -407,9 +407,6 @@ public String getFormatVZG(Record record) {
           }
           return "Bücher";
           break;
-        case 'B':
-          return "Aufsätze";
-          break;
         case 'D':                                          
           return "Zeitschriftenbände";
           break;
@@ -728,9 +725,6 @@ public String getFormatVZGEng(Record record) {
               }
           }
           return "Book";
-          break;
-        case 'B':
-          return "Article";
           break;
         case 'D':
           return "Serial Volume";
