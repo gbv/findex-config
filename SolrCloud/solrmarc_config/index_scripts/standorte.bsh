@@ -319,3 +319,33 @@ public Set getSelektNeu(Record record) {
     return result;
 }
 
+public Set getExemplarKommentar(Record record){
+    Set result = new LinkedHashSet();
+    String location = "";
+
+    List holdings = record.getVariableFields("980");
+    Iterator fieldsIter = holdings.iterator();
+    if (holdings != null) {
+        DataField holdingField;
+        while(fieldsIter.hasNext()) {
+             String holding = "";
+             holdingField = (DataField) fieldsIter.next();
+             if (holdingField != null) {
+                 if (holdingField.getSubfield('2') != null) {
+                     holding = holdingField.getSubfield('2').getData();
+                 }
+                 List sigs = holdingField.getSubfields('k');
+                 Iterator i = sigs.iterator();
+                 while (i.hasNext()) {
+                     Subfield sig = (Subfield)i.next();
+                     location = sig.getData(); 
+                     ilnsig = holding + "@" + location;
+                     result.add(ilnsig);
+                 }
+             }
+        }
+    }
+    return result;
+}
+
+
