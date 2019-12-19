@@ -16,10 +16,12 @@ Set getPPNLinks(Record record)
           while (i.hasNext()) {
             Subfield ppnlink = (Subfield)i.next();
             String ppn = ppnlink.getData();
-            ppn = ppn.toUpperCase().replaceAll("\\(DE-\\d{3}\\)", "");
-            ppn = ppn.toUpperCase().replaceAll("\\(DE-B\\d{4}\\)", "");
-            result.add(ppn);
-          }
+            if (ppn.matches("\\(DE-601\\).*") || ppn.matches("\\(DE-627\\).*")) {
+                ppn = ppn.toUpperCase().replaceAll("\\(DE-\\d{3}\\)", "");
+                ppn = ppn.toUpperCase().replaceAll("\\(DE-B\\d{4}\\)", "");
+                result.add(ppn);
+              }
+            }
         }
 
         return result;
