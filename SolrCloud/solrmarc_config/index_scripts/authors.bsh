@@ -29,3 +29,25 @@ Set getAllAuthors(Record record, String fieldSpecs, String pattern) {
     }
     return result;
 }
+
+Set getAllAuthorsWithRoles(Record record, String fieldSpecs) {
+    Set result = new LinkedHashSet();
+    String[] fieldSpec = fieldSpecs.split(":");
+    List fields = record.getVariableFields(fieldSpec);
+
+    if (fields != null) {
+        Iterator fieldsIter = fields.iterator();
+        while(fieldsIter.hasNext()) {
+            DataField field = (DataField)fieldsIter.next();
+            Subfield function = field.getSubfield('4');
+            if (function != null) {
+                Subfield name = field.getSubfield('a');
+                if (name != null) {
+                    result.add(name.getData() + " @@" + function.getData().trim() + "@@");
+                }
+            }
+        }
+    }
+    return result;
+}
+
