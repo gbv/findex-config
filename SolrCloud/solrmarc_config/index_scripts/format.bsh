@@ -981,11 +981,15 @@ public String isOA(Record record)
     {   
         DataField df = (DataField) vf;
         String currentString = "";
-        for (Subfield current : df.getSubfields('y')) { 
-            if (current.getData().trim().equals("OALizenz") || current.getData().trim().equals("Open Access-Lizenzbedingungen") || current.getData().trim().equals("OA") || current.getData().trim().startsWith("OpenAccess Lizenz")) {
-               return "true";
-            }
+        if (df.getSubfield('3') != null) {
+            if (df.getSubfield('3').getData().trim().equals("Volltext")) {
+                for (Subfield current : df.getSubfields('y')) { 
+                    if (current.getData().trim().equals("OALizenz") || current.getData().trim().equals("Open Access-Lizenzbedingungen") || current.getData().trim().equals("OA") || current.getData().trim().startsWith("OpenAccess Lizenz")) {
+                       return "true";
+                    }
          
+                }
+            }
         }
     }
     return "false";
@@ -998,7 +1002,7 @@ public String isFreeBeer(Record record)
     }
     String remote = "false";
     List list856 = record.getVariableFields("856");
-    if (remote(record).equals("true")) {
+/*    if (remote(record).equals("true")) {
         remote = "true";
     } else {
         for (VariableField vf : list856) {
@@ -1010,20 +1014,25 @@ public String isFreeBeer(Record record)
             }
         }
 
-    }
-    if (remote.equals("true")) {
+    } */
+
+    if (remote(record).equals("true")) {
         for (VariableField vf : list856)
         {
             DataField df = (DataField) vf;
             String currentString = "";
-            for (Subfield current : df.getSubfields('z')) {
-                if (current.getData().trim().equals("LF") || current.getData().trim().equals("KF") || current.getData().trim().startsWith("Kostenfrei")) {
-                   return "true";
-                }
+            if (df.getSubfield('3') != null) {
+                if (df.getSubfield('3').getData().trim().equals("Volltext")) {
+                    for (Subfield current : df.getSubfields('z')) {
+                        if (current.getData().trim().equals("LF") || current.getData().trim().equals("KF") || current.getData().trim().startsWith("Kostenfrei")) {
+                           return "true";
+                        }
 
+                    }
+                }
             }
         }
-
+     
         List list981 = record.getVariableFields("981");
         for (VariableField vf : list981)
         {
