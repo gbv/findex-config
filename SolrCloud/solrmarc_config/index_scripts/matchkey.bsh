@@ -25,13 +25,11 @@ public String matchkeyMaterialISBNYear(Record record) {
               material = "book";
               String isbn = matchkeyISBN(record);
               if (!isbn.isEmpty()) matchkey = material + ":" + isbn + ":" + pubdate;
-              return matchkey;
          case "Journal":
          case "eJournal":
               material = "journal";
               String issn = matchkeyISSN(record);
               if (!issn.isEmpty()) matchkey = material + ":" + issn + ":" + pubdate;
-              return matchkey;
          case "Article":
          case "electronic Article":
               material = "article";
@@ -39,7 +37,9 @@ public String matchkeyMaterialISBNYear(Record record) {
               String enumeration = matchkeyEnum(record);
               String titlekey = matchkeyTitlekey(record);
               if (!issn.isEmpty()) matchkey = material + ":" + issn + ":" + pubdate + ":" + enumeration + ":" + titlekey;
-              return matchkey;
+       }
+       if (matchkey.isEmpty()) {
+          matchkey = ((ControlField)record.getVariableField("001")).getData();
        }
        return matchkey;
 }
