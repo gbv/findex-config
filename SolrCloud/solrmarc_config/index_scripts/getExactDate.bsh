@@ -1,0 +1,134 @@
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.apache.log4j.Logger;
+import org.marc4j.marc.*;
+import org.solrmarc.marc.MarcImporter;
+import org.solrmarc.tools.Utils;
+import org.solrmarc.index.SolrIndexer;
+import java.time.*;
+import java.time.format.*;
+
+public String getExactDate(Record record)
+{
+    int jahr = getYear(record);
+    int monat = getMonth(record);
+    int tag = getDay(record);
+    LocalDateTime pubdate;
+ 
+    try {
+        pubdate = LocalDateTime.of(jahr,monat,tag,00,00,00);
+    } catch (Exception e) {
+        // no valid date
+        return "";
+    }
+    return pubdate.toInstant(ZoneOffset.UTC).toString();
+}
+
+public Integer getDay(Record record)
+{
+    int tag = 0;
+    DataField field = record.getVariableField("952");
+    if (field != null) {
+        Subfield sf = field.getSubfield('b');
+        if (sf != null) {
+            try {
+                tag = Integer.parseInt(sf.getData());
+            } catch (Exception e) {
+                tag = 0;
+            }
+        }
+    }
+    if ((field == null) || (tag < 1 || tag > 31)) {
+        field = record.getVariableField("936");
+        if (field != null) {
+            Subfield sf = field.getSubfield('b');
+            if (sf != null) {
+                try {
+                    tag = Integer.parseInt(sf.getData());
+                } catch (Exception e) {
+                    tag = 0;
+                }
+            }
+        }
+    }
+    if (tag < 1 || tag > 31) {
+        tag = 1;
+    }
+    return tag;
+}
+
+public Integer getMonth(Record record)
+{
+    int monat = 0;
+    DataField field = record.getVariableField("952");
+    if (field != null) {
+        Subfield sf = field.getSubfield('c');
+        if (sf != null) {
+            try {
+                monat = Integer.parseInt(sf.getData());
+            } catch (Exception e) {
+                monat = 0;
+            }
+        }
+    }
+    if ((field == null) || (monat < 1 || monat > 12)) {
+        field = record.getVariableField("936");
+        if (field != null) {
+            Subfield sf = field.getSubfield('c');
+            if (sf != null) {
+                try {
+                    monat = Integer.parseInt(sf.getData());
+                } catch (Exception e) {
+                    monat = 0;
+                }
+            }
+        }
+    }
+    if (monat < 1 || monat > 12) {
+        monat = 1;
+    }
+    return monat;
+}
+
+public Integer getYear(Record record)
+{
+    int jahr = 0;
+    DataField field = record.getVariableField("952");
+    if (field != null) {
+        Subfield sf = field.getSubfield('j');
+        if (sf != null) {
+            try {
+                jahr = Integer.parseInt(sf.getData());
+            } catch (Exception e) {
+                jahr = 0;
+            }
+        }
+    }
+    if ((field == null) || (jahr == 0)) {
+        field = record.getVariableField("936");
+        if (field != null) {
+            Subfield sf = field.getSubfield('c');
+            if (sf != null) {
+                try {
+                    jahr = Integer.parseInt(sf.getData());
+                } catch (Exception e) {
+                    jahr = 0;
+                }
+            }
+        }
+    }
+    if ((field == null) || (jahr == 0)) {
+        ControlField cf = (ControlField) record.getVariableField("008");
+        if (cf != null) {
+            try {
+                jahr = Integer.parseInt(cf.getData().substring(7,11));
+            } catch (Exception e) {
+                jahr = 0;
+            }
+        }
+    }
+    if (jahr == 0) {
+        jahr = Year.now().getValue();;
+    }
+    return jahr;
+}
