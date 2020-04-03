@@ -8,6 +8,8 @@ import org.solrmarc.index.SolrIndexer;
 import java.time.*;
 import java.time.format.*;
 
+private final static Pattern NUMS = Pattern.compile("(\\d+)");
+
 public String getExactDate(Record record)
 {
     int jahr = getYear(record);
@@ -32,7 +34,10 @@ public Integer getDay(Record record)
         Subfield sf = field.getSubfield('b');
         if (sf != null) {
             try {
-                tag = Integer.parseInt(sf.getData());
+                Matcher numbers = NUMS.matcher(sf.getData());
+                if (numbers.find()) {
+                    tag = Integer.parseInt(numbers.group(1));
+                }
             } catch (Exception e) {
                 tag = 0;
             }
@@ -44,7 +49,10 @@ public Integer getDay(Record record)
             Subfield sf = field.getSubfield('b');
             if (sf != null) {
                 try {
-                    tag = Integer.parseInt(sf.getData());
+                    Matcher numbers = NUMS.matcher(sf.getData());
+                    if (numbers.find()) {
+                        tag = Integer.parseInt(numbers.group(1));
+                    }
                 } catch (Exception e) {
                     tag = 0;
                 }
@@ -65,7 +73,10 @@ public Integer getMonth(Record record)
         Subfield sf = field.getSubfield('c');
         if (sf != null) {
             try {
-                monat = Integer.parseInt(sf.getData());
+                Matcher numbers = NUMS.matcher(sf.getData());
+                if (numbers.find()) {
+                    monat = Integer.parseInt(numbers.group(1));
+                }
             } catch (Exception e) {
                 monat = 0;
             }
@@ -77,7 +88,10 @@ public Integer getMonth(Record record)
             Subfield sf = field.getSubfield('c');
             if (sf != null) {
                 try {
-                    monat = Integer.parseInt(sf.getData());
+                    Matcher numbers = NUMS.matcher(sf.getData());
+                    if (numbers.find()) {
+                        monat = Integer.parseInt(numbers.group(1));
+                    }
                 } catch (Exception e) {
                     monat = 0;
                 }
@@ -98,7 +112,10 @@ public Integer getYear(Record record)
         Subfield sf = field.getSubfield('j');
         if (sf != null) {
             try {
-                jahr = Integer.parseInt(sf.getData());
+                Matcher numbers = NUMS.matcher(sf.getData());
+                if (numbers.find()) {
+                    jahr = Integer.parseInt(numbers.group(1));
+                }
             } catch (Exception e) {
                 jahr = 0;
             }
@@ -110,7 +127,10 @@ public Integer getYear(Record record)
             Subfield sf = field.getSubfield('c');
             if (sf != null) {
                 try {
-                    jahr = Integer.parseInt(sf.getData());
+                    Matcher numbers = NUMS.matcher(sf.getData());
+                    if (numbers.find()) {
+                        jahr = Integer.parseInt(numbers.group(1));
+                    }
                 } catch (Exception e) {
                     jahr = 0;
                 }
