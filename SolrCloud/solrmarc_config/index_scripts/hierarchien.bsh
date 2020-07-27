@@ -23,9 +23,9 @@ public boolean isTopRecord(Record record) {
   if (Character.toUpperCase(leaderBit6) == 'A' && Character.toUpperCase(leaderBit7) == 'S') {
     return true;
   }
-  if (Character.toUpperCase(leaderBit6) == 'A' && Character.toUpperCase(leaderBit7) == 'B') {
-    return true;
-  }
+//  if (Character.toUpperCase(leaderBit6) == 'A' && Character.toUpperCase(leaderBit7) == 'B') {
+//    return true;
+//  }
   return false;
 }
 

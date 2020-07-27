@@ -15,6 +15,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.io.*;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.*;
+
 // define the base level indexer so that its methods can be called from the script.
 // note that the SolrIndexer code will set this value before the script methods are called.
 org.solrmarc.index.SolrIndexer indexer = null;
@@ -43,6 +47,52 @@ Set getAllCoordinates(Record record) {
                      }
                  }
             }
+     }
+     List f651s = record.getVariableFields("651");
+     if (f651s != null) {
+        gndId = null;
+        Iterator f651Iter = f651s.iterator();
+        while (f651Iter.hasNext()) {
+            f651 = (DataField)f651Iter.next();
+            sf = f651.getSubfields('0');
+            i = sf.iterator();
+            while (i.hasNext()) {
+                Subfield ppnlink = (Subfield)i.next();
+                String ppn = ppnlink.getData();
+                if (ppn.matches("\\(DE-588\\)(.*)")) {
+                    ppn = ppn.toUpperCase().replaceAll("\\(DE-\\d{3}\\)", "");
+                    gndId = ppn;
+                    URL lobidURL = new URL("http://lobid.org/gnd/" + gndId + ".json");
+                    URLConnection request = lobidURL.openConnection();
+                    JsonParser jp = new JsonParser();
+                    JsonElement root = new JsonObject();
+                    try {
+                        root = jp.parse(new InputStreamReader((InputStream) request.getContent()));
+                    } catch(Exception e) {
+                        continue;
+                    }
+                    JsonObject rootobj = root.getAsJsonObject();
+                    if (rootobj.has("hasGeometry")) {
+                        JsonArray coordobj = rootobj.get("hasGeometry").getAsJsonArray();
+                        Iterator coordIter = coordobj.iterator();
+                        while  (coordIter.hasNext()) {
+                            wktobj = coordIter.next();
+                            if (wktobj.has("asWKT")) {
+                                if (wktobj.get("asWKT").isJsonArray()) {
+                                    JsonArray wktarr = wktobj.get("asWKT").getAsJsonArray();
+                                    wktarrIter = wktarr.iterator();
+                                    while (wktarrIter.hasNext()) {
+                                        JsonElement wkt = wktarrIter.next();
+                                        String coord = wkt.getAsString();
+                                        result.add(coord);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
     return result;
 }
