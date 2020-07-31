@@ -932,7 +932,7 @@ public String remote(Record record)
     List fields = record.getVariableFields("007");
     String leader = record.getLeader().toString();
 //System.out.println("Leader: " + leader + " 67:" + leader.toUpperCase().charAt(6) + leader.toUpperCase().charAt(7));
-    if ((leader.toUpperCase().charAt(6) == 'M' || leader.toUpperCase().charAt(6) == 'A') && (leader.toUpperCase().charAt(7) == 'A' || leader.toUpperCase().charAt(7) == 'M' || leader.toUpperCase().charAt(7) == 'S' || leader.toUpperCase().charAt(7) == 'B' || leader.toUpperCase().charAt(7) == 'I')) {
+    if ((leader.toUpperCase().charAt(6) == 'M' || leader.toUpperCase().charAt(6) == 'A' || leader.toUpperCase().charAt(6) == 'G') && (leader.toUpperCase().charAt(7) == 'A' || leader.toUpperCase().charAt(7) == 'M' || leader.toUpperCase().charAt(7) == 'S' || leader.toUpperCase().charAt(7) == 'B' || leader.toUpperCase().charAt(7) == 'I')) {
         Iterator fieldsIter = fields.iterator();
         if (fields != null) {
             ControlField formatField;
