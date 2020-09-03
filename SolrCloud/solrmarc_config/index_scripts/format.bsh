@@ -1024,7 +1024,7 @@ public String isFreeBeer(Record record)
             if (df.getSubfield('3') != null) {
                 if (df.getSubfield('3').getData().trim().equals("Volltext")) {
                     for (Subfield current : df.getSubfields('z')) {
-                        if (current.getData().trim().equals("LF") || current.getData().trim().equals("KF") || current.getData().trim().startsWith("Kostenfrei")) {
+                        if (current.getData().trim().equals("LF") || current.getData().trim().equals("KF") || current.getData().toLowerCase().trim().startsWith("kostenfrei")) {
                            return "true";
                         }
 
