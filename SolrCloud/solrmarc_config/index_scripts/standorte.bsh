@@ -203,6 +203,26 @@ public Set getSchlagworteILN(Record record){
              }
         }
     }
+    List holdings = record.getVariableFields("989");
+    Iterator fieldsIter = holdings.iterator();
+    if (holdings != null) {
+        DataField holdingField;
+        while(fieldsIter.hasNext()) {
+             String holding = "";
+             holdingField = (DataField) fieldsIter.next();
+
+             if (holdingField != null) {
+                 if (holdingField.getSubfield('2') != null) {
+                     holding = holdingField.getSubfield('2').getData();
+                 }
+                 if (holdingField.getSubfield('a') != null) {
+                     cl = holdingField.getSubfield('a').getData();
+                 }
+                 result.add(holding + ":" + cl);
+                 cl = "";
+             }
+        }
+    }
     return result;
 }
 
@@ -348,4 +368,26 @@ public Set getExemplarKommentar(Record record){
     return result;
 }
 
+public Set getProvIsil(Record record) {
+    Set result = new LinkedHashSet();
+    String prov = "";
+    String isil = "";
+    Iterator fieldsIter = record.getVariableFields("561").iterator();
+    while(fieldsIter.hasNext()) {
+        isil = "";
+        prov = "";
+        provField = (DataField)fieldsIter.next();
+        if (provField != null) {
+            if (provField.getSubfield('5') != null) {
+                isil = provField.getSubfield('5').getData();
+            }
+            if (provField.getSubfield('a') != null) {
+                prov = provField.getSubfield('a').getData();
+            }
+            result.add(isil + "@" + prov);
+        }
+    }
+    return result;
+
+}
 
