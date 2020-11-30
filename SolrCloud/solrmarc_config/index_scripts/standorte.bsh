@@ -391,3 +391,31 @@ public Set getProvIsil(Record record) {
 
 }
 
+public Set getSelectkeyBib(Record record){
+    Set result = new LinkedHashSet();
+    String location = "";
+
+    List holdings = record.getVariableFields("980");
+    Iterator fieldsIter = holdings.iterator();
+    if (holdings != null) {
+        DataField holdingField;
+        while(fieldsIter.hasNext()) {
+             String holding = "";
+             holdingField = (DataField) fieldsIter.next();
+             if (holdingField != null) {
+                 if (holdingField.getSubfield('2') != null) {
+                     holding = holdingField.getSubfield('2').getData() + "@";
+                 }
+                 if (holdingField.getSubfield('y') != null) {
+                     location = holdingField.getSubfield('y').getData();
+                     if (location.length() >= 2) {
+                         holding = holding + location.substring(1);
+                     }
+                 }
+                 result.add(holding);
+             }
+        }
+    }
+    return result;
+}
+
