@@ -95,3 +95,23 @@ Set getNormLinks(Record record)
         }
         return result;
     }
+
+Set getNormPrefixLinks(Record record)
+    {
+
+        Set result = new LinkedHashSet();
+
+        List fields = record.getDataFields();
+        for (DataField field : fields)
+        {
+          List sf = field.getSubfields('0');
+          Iterator i = sf.iterator();
+          while (i.hasNext()) {
+            Subfield ppnlink = (Subfield)i.next();
+            String ppn = ppnlink.getData();
+            result.add(ppn);
+          }
+        }
+        return result;
+    }
+
