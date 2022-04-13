@@ -110,7 +110,7 @@ public String matchkeyTitlekey(Record record) {
     DataField titlefield = record.getVariableField("245");
     if (titlefield != null) {
         titlef = titlefield.getSubfield('a');
-        if (title != null) {
+        if (titlef != null) {
             String title = titlef.getData().replaceAll("[\\W]","").toLowerCase().trim();
             for (int i=0; i<(title.length() / 4) *3; i++) {
                 if ((i & 1) != 0) {

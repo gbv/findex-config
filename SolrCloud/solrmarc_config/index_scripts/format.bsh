@@ -581,6 +581,13 @@ public String getFormatVZG(Record record) {
       return "Noten";
       break;
 
+    case 'K':
+     switch (Character.toUpperCase(leaderBit7)) {
+         case 'M':
+           return "Bücher";
+           break;
+     }
+
     case 'P':
       return "Medienkombination";
       break;
@@ -892,6 +899,13 @@ public String getFormatVZGEng(Record record) {
       return "Musical Score";
       break;
 
+    case 'K':
+     switch (Character.toUpperCase(leaderBit7)) {
+         case 'M':
+           return "Book";
+           break;
+     }
+
     case 'P':
       return "Mixed Materials";
       break;
@@ -932,7 +946,7 @@ public String remote(Record record)
     List fields = record.getVariableFields("007");
     String leader = record.getLeader().toString();
 //System.out.println("Leader: " + leader + " 67:" + leader.toUpperCase().charAt(6) + leader.toUpperCase().charAt(7));
-    if ((leader.toUpperCase().charAt(6) == 'M' || leader.toUpperCase().charAt(6) == 'A' || leader.toUpperCase().charAt(6) == 'G') && (leader.toUpperCase().charAt(7) == 'A' || leader.toUpperCase().charAt(7) == 'M' || leader.toUpperCase().charAt(7) == 'S' || leader.toUpperCase().charAt(7) == 'B' || leader.toUpperCase().charAt(7) == 'I')) {
+//    if ((leader.toUpperCase().charAt(6) == 'M' || leader.toUpperCase().charAt(6) == 'A' || leader.toUpperCase().charAt(6) == 'G') && (leader.toUpperCase().charAt(7) == 'A' || leader.toUpperCase().charAt(7) == 'M' || leader.toUpperCase().charAt(7) == 'S' || leader.toUpperCase().charAt(7) == 'B' || leader.toUpperCase().charAt(7) == 'I')) {
         Iterator fieldsIter = fields.iterator();
         if (fields != null) {
             ControlField formatField;
@@ -948,7 +962,7 @@ public String remote(Record record)
                 }
             }
         }
-    }
+//    }
     return "false";
 }
 
@@ -969,7 +983,7 @@ public String isOA(Record record)
         DataField df = (DataField) vf;
         String currentString = "";
         for (Subfield current : df.getSubfields('z')) {
-            if (current.getData().trim().equals("OALizenz") || current.getData().trim().equals("Open Access-Lizenzbedingungen") || current.getData().trim().equals("OA") || current.getData().trim().startsWith("OpenAccess Lizenz")) {
+            if (current.getData().trim().equals("OALizenz") || current.getData().trim().equals("Open Access-Lizenzbedingungen") || current.getData().trim().equals("OA") || current.getData().trim().startsWith("OpenAccess Lizenz") || current.getData().toLowerCase().trim().equals("kostenfrei")) {
                return "true";
             }
          
@@ -984,7 +998,7 @@ public String isOA(Record record)
         if (df.getSubfield('3') != null) {
             if (df.getSubfield('3').getData().trim().equals("Volltext")) {
                 for (Subfield current : df.getSubfields('y')) { 
-                    if (current.getData().trim().equals("OALizenz") || current.getData().trim().equals("Open Access-Lizenzbedingungen") || current.getData().trim().equals("OA") || current.getData().trim().startsWith("OpenAccess Lizenz")) {
+                    if (current.getData().trim().equals("OALizenz") || current.getData().trim().equals("Open Access-Lizenzbedingungen") || current.getData().trim().equals("OA") || current.getData().trim().startsWith("OpenAccess Lizenz") || current.getData().toLowerCase().trim().equals("kostenfrei")) {
                        return "true";
                     }
          

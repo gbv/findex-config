@@ -28,16 +28,25 @@ Set getTopics(Record record, String fieldSpecs) {
         Iterator fieldsIter = fields.iterator();
         while(fieldsIter.hasNext()) {
                 field = (DataField)fieldsIter.next();
-                classf = field.getSubfield('a');
-                if (classf != null) {
-                    topic = classf.getData();
-                    typef = field.getSubfield('2');
-                    if (typef != null) {
-                        type = typef.getData().trim();
-                    } else {
-                        type = "misc";
+                if (field.getTag().equals("937")) {
+                    classf = field.getSubfield('e');
+                    if (classf != null) {
+                        topic = classf.getData();
+                        type = "§§mvi§§";
+                        result.add(type + " " + topic);
                     }
-                    result.add(type + " " + topic);
+                } else {
+                    classf = field.getSubfield('a');
+                    if (classf != null) {
+                        topic = classf.getData();
+                        typef = field.getSubfield('2');
+                        if (typef != null) {
+                            type = typef.getData().trim();
+                        } else {
+                            type = "misc";
+                        }
+                        result.add(type + " " + topic);
+                    }
                 }
             }
     }

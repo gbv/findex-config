@@ -1,0 +1,128 @@
+/**
+ * Custom geo coordinates parsing script
+ * takes 255 $c as input and delivers coordinates in 
+ * WKT/CQL ENVELOPE syntax as expected by Solr BBoxFields
+ *
+ * This can be used to override built-in SolrMarc custom functions.  If you change
+ * this script, you will need to activate it in import/marc_local.properties before
+ * it will be applied during indexing.
+ */
+import org.marc4j.marc.Record;
+import org.marc4j.marc.DataField;
+import org.marc4j.marc.ControlField;
+import org.marc4j.marc.Subfield;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.io.*;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.*;
+
+// define the base level indexer so that its methods can be called from the script.
+// note that the SolrIndexer code will set this value before the script methods are called.
+org.solrmarc.index.SolrIndexer indexer = null;
+
+// private static final Pattern BOX_PATTERN = Pattern.compile("\\((.+)--(.+)\\/(.+)--(.+)\\)\\.");
+private static final Pattern BOX_PATTERN = Pattern.compile("(.+)-(.+)\\/(.+)-(.+)");
+private static final Pattern COORDINATES_PATTERN = Pattern.compile("^([eEwWnNsS]) (\\d{3}) (\\d{2})");
+
+Set getAllCoordinates(Record record) {
+    Set result = new LinkedHashSet();
+    List f255s = record.getVariableFields("255");
+    if (f255s != null) {
+            Iterator f255Iter = f255s.iterator();
+            while(f255Iter.hasNext()) {
+                 f255 = (DataField)f255Iter.next();
+                 coordF = f255.getSubfield('c');
+                 if (coordF != null) {
+                     HashMap coord = getCoordinates(coordF.getData());
+                     if (coord != null) {
+                         if (coord.get('w') != null && coord.get('o') != null && coord.get('n') != null && coord.get('s') != null) {
+                             if (!coord.get('w').isNaN() && !coord.get('o').isNaN() && !coord.get('n').isNaN() && !coord.get('s').isNaN()) {
+                                 String coordstring = String.format("ENVELOPE(%s,%s,%s,%s)", new Object[] { coord.get('w'), coord.get('o'), coord.get('n'), coord.get('s') });
+                                 result.add(coordstring);
+                             }
+                         }
+                     }
+                 }
+            }
+     }
+     List f651s = record.getVariableFields("651");
+     if (f651s != null) {
+        gndId = null;
+        Iterator f651Iter = f651s.iterator();
+        while (f651Iter.hasNext()) {
+            f651 = (DataField)f651Iter.next();
+            sf = f651.getSubfields('0');
+            i = sf.iterator();
+            while (i.hasNext()) {
+                Subfield ppnlink = (Subfield)i.next();
+                String ppn = ppnlink.getData();
+                if (ppn.matches("\\(DE-588\\)(.*)")) {
+                    ppn = ppn.toUpperCase().replaceAll("\\(DE-\\d{3}\\)", "");
+                    gndId = ppn;
+                    URL lobidURL = new URL("http://lobid.org/gnd/" + gndId + ".json");
+                    URLConnection request = lobidURL.openConnection();
+                    JsonParser jp = new JsonParser();
+                    JsonElement root = new JsonObject();
+                    try {
+                        root = jp.parse(new InputStreamReader((InputStream) request.getContent()));
+                    } catch(Exception e) {
+                        continue;
+                    }
+                    JsonObject rootobj = root.getAsJsonObject();
+                    if (rootobj.has("hasGeometry")) {
+                        JsonArray coordobj = rootobj.get("hasGeometry").getAsJsonArray();
+                        Iterator coordIter = coordobj.iterator();
+                        while  (coordIter.hasNext()) {
+                            wktobj = coordIter.next();
+                            if (wktobj.has("asWKT")) {
+                                if (wktobj.get("asWKT").isJsonArray()) {
+                                    JsonArray wktarr = wktobj.get("asWKT").getAsJsonArray();
+                                    wktarrIter = wktarr.iterator();
+                                    while (wktarrIter.hasNext()) {
+                                        JsonElement wkt = wktarrIter.next();
+                                        String coord = wkt.getAsString();
+                                        result.add(coord);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return result;
+}
+
+HashMap getCoordinates(String coordstring) {
+    HashMap nautcoords = new HashMap();
+    HashMap coords = new HashMap();
+    Matcher boxmatcher = BOX_PATTERN.matcher(coordstring);
+    if (boxmatcher.matches()) {
+        nautcoords.put('w', toDec(boxmatcher.group(1).toUpperCase()));
+        nautcoords.put('o', toDec(boxmatcher.group(2).toUpperCase()));
+        nautcoords.put('n', toDec(boxmatcher.group(3).toUpperCase()));
+        nautcoords.put('s', toDec(boxmatcher.group(4).toUpperCase()));
+    }
+    return nautcoords;
+}
+
+Double toDec(coord) {
+    Matcher matcher = COORDINATES_PATTERN.matcher(coord);
+    if (matcher.matches()) {
+        String hemisphere = matcher.group(1).toUpperCase();
+        int degrees = Integer.parseInt(matcher.group(2));
+        int minutes = Integer.parseInt(matcher.group(3));
+        double coordinate = degrees + (minutes / 60.0);
+        if (hemisphere.equals("W") || hemisphere.equals("S")) {
+            coordinate *= -1;
+        }
+        return coordinate;
+    }
+    return Double.NaN;
+}
+
+

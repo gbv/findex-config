@@ -105,16 +105,21 @@ public Set getSignaturILN(Record record){
              String holding = "";
              holdingField = (DataField) fieldsIter.next();
              if (holdingField != null) {
-                 if (holdingField.getSubfield('2') != null) {
-                     holding = holdingField.getSubfield('2').getData();
-                 }
                  List sigs = holdingField.getSubfields('d');
                  Iterator i = sigs.iterator();
                  while (i.hasNext()) {
                      Subfield sig = (Subfield)i.next();
-                     location = sig.getData(); 
-                     ilnsig = holding + ":" + location;
-                     result.add(ilnsig);
+                     location = sig.getData();
+                     if (holdingField.getSubfield('2') != null) {
+                         holding = holdingField.getSubfield('2').getData();
+                         ilnsig = holding + ":" + location;
+                         result.add(ilnsig);
+                     }
+                     if (holdingField.getSubfield('x') != null) {
+                         holding = holdingField.getSubfield('x').getData();
+                         ilnsig = holding + ":" + location;
+                         result.add(ilnsig);
+                     } 
                  }
              }
         }
@@ -144,11 +149,39 @@ public Set getClassILN(Record record){
                  else if (holdingField.getSubfield('a') != null) {
                      cl = holdingField.getSubfield('a').getData();
                  }
-                 result.add(holding + ":" + cl);
+                 if (holdingField.getSubfield('2') != null) {
+                     holding = holdingField.getSubfield('2').getData();
+                     result.add(holding + ":" + cl);
+                 }
+                 if (holdingField.getSubfield('x') != null) {
+                     sigel = holdingField.getSubfield('x').getData();
+                     result.add(sigel + ":" + cl);
+                 }
                  cl = "";
              }
         }
     }
+    List holdings = record.getVariableFields("936");
+    Iterator fieldsIter = holdings.iterator();
+    if (holdings != null) {
+        DataField holdingField;
+        while(fieldsIter.hasNext()) {
+             String holding = "";
+             holdingField = (DataField) fieldsIter.next();
+
+             if (holdingField != null) {
+                 if (holdingField.getSubfield('2') != null) {
+                     holding = holdingField.getSubfield('2').getData();
+                     if (holdingField.getSubfield('a') != null) {
+                         cl = holdingField.getSubfield('a').getData();
+                     }
+                     result.add(holding + ":" + cl);
+                     cl = "";
+                 }
+             }
+        }
+    }
+
     return result;
 }
 
@@ -192,13 +225,17 @@ public Set getSchlagworteILN(Record record){
              holdingField = (DataField) fieldsIter.next();
 
              if (holdingField != null) {
-                 if (holdingField.getSubfield('2') != null) {
-                     holding = holdingField.getSubfield('2').getData();
-                 }
                  if (holdingField.getSubfield('a') != null) {
                      cl = holdingField.getSubfield('a').getData();
                  }
-                 result.add(holding + ":" + cl);
+                 if (holdingField.getSubfield('2') != null) {
+                     holding = holdingField.getSubfield('2').getData();
+                     result.add(holding + ":" + cl);
+                 }
+                 if (holdingField.getSubfield('x') != null) {
+                     sigel = holdingField.getSubfield('x').getData();
+                     result.add(sigel + ":" + cl);
+                 }
                  cl = "";
              }
         }

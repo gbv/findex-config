@@ -38,6 +38,10 @@ public Set getCollections(Record record) {
             Matcher ILNmatcher = ILN_PATTERN.matcher(collcode);
             if (ILNmatcher.matches()) {
                 ilns.add(Integer.parseInt(ILNmatcher.group(1)));
+            } else {
+                if (collcode.startsWith("GBV_") && !collcode.startsWith("GBV_ILN_")) {
+                    result.add(collcode);
+                }
             }
         }
     }
