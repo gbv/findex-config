@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<schema name="GBV Bibliographic Index" version="7.2">
+<schema name="GBV Bibliographic Index" version="9.0">
   <types>
     <fieldType name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
     <fieldType name="long" class="solr.LongPointField" positionIncrementGap="0"/>
@@ -273,7 +273,7 @@
    <field name="topic" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="topic_unstemmed" type="textProper" indexed="true" stored="true" multiValued="true"/>
    <field name="topic_facet" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
-   <field name="topic_browse" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+   <field name="topic_browse" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="author_browse" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
    <field name="genre" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="genre_facet" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
@@ -346,7 +346,7 @@
    <field name="country_code" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="class" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="class_local" type="textProper" indexed="true" stored="true" multiValued="true"/>
-   <field name="class_local_iln" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+   <field name="class_local_iln" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="bklname" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
    <field name="bklnumber" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
    <field name="bkl" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
@@ -396,7 +396,9 @@
  <copyField source="fulltext" dest="fulltextGer"/>
  <copyField source="author_browse" dest="author_facet"/>
  <!-- CopyFields for Alphabetic Browse -->
- <copyField source="topic"    dest="topic_browse"/>
+ <copyField source="topic" dest="topic_browse"/>
+ <copyField source="topic" dest="topic_browse_scis_mv"/>
+ <copyField source="class_local_iln" dest="class_local_iln_scis_mv"/>
  <copyField source="author"    dest="authorSound"/>
  <copyField source="author2"    dest="authorSound"/>
  <!-- VZG -->
