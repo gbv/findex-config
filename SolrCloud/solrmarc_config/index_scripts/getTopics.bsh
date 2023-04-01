@@ -35,17 +35,25 @@ Set getTopics(Record record, String fieldSpecs) {
                         type = "§§mvi§§";
                         result.add(type + " " + topic);
                     }
+                } else if (field.getTag().equals("082")) {
+                    classf = field.getSubfield('a');
+                    if (classf != null) {
+                        topic = classf.getData();
+                        type = "ddc"; 
+                        result.add(type + " " + topic);
+                    }
                 } else {
                     classf = field.getSubfield('a');
                     if (classf != null) {
                         topic = classf.getData();
-                        typef = field.getSubfield('2');
-                        if (typef != null) {
-                            type = typef.getData().trim();
+                        typelist = field.getSubfields('2');
+                        if (!typelist.isEmpty()) {
+                            for (typef : typelist) {
+                                result.add(typef.getData() + " " + topic);
+                            }
                         } else {
-                            type = "misc";
+                            result.add("misc " + topic);
                         }
-                        result.add(type + " " + topic);
                     }
                 }
             }

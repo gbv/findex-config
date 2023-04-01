@@ -115,3 +115,41 @@ Set getNormPrefixLinks(Record record)
         return result;
     }
 
+Set getNormLinksRole(Record record, String idfirst)
+    {
+
+        Set result = new LinkedHashSet();
+        List fields = record.getDataFields();
+
+        for (DataField field : fields)
+        {
+            List sf = field.getSubfields('0');
+            Iterator i = sf.iterator();
+            while (i.hasNext()) {
+                Subfield ppnlink = (Subfield)i.next();
+                String ppn = ppnlink.getData();
+                if (ppn.matches("\\(DE-588\\)(.*)")) {
+                    gndID = ppn;
+                    List sf4s = field.getSubfields('4');
+                    if (sf4s != null && !sf4s.isEmpty()) {
+                         for (Subfield sf4 : sf4s) {
+                             if (idfirst.equals("last")) {
+                                 result.add("@@" + sf4.getData() + "@@" + gndID);
+                             } else {
+                                 result.add(gndID + "@@" + sf4.getData() + "@@");
+                             }          
+                         }
+                    } else {
+                        if (idfirst.equals("last")) {
+                            result.add("@@" + field.getTag() + "@@" + gndID);
+                        } else {
+                            result.add(gndID + "@@" + field.getTag() + "@@");
+                        }
+                    }
+                }
+             }
+        
+        }
+        return result;
+    }
+

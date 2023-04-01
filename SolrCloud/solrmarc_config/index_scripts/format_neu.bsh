@@ -1,0 +1,150 @@
+import org.marc4j.marc.Record;
+import org.marc4j.marc.ControlField;
+import org.marc4j.marc.Subfield;
+import org.marc4j.marc.DataField;
+
+Set getFormatDetails(Record record)
+{
+    Set result = new LinkedHashSet();
+    List f655s = record.getVariableFields("655");
+    if(f655s != null) {
+        Iterator f655Iter = f655s.iterator();
+        while (f655Iter.hasNext()) {
+            f655 = (DataField)f655Iter.next();
+
+            typeF = f655.getSubfield('2');
+            if (typeF != null) {
+                if (typeF.getData().equals("gnd-content")) {
+                    formatF = f655.getSubfield('a');
+                    if (formatF != null) {
+                        result.add(formatF.getData());
+                    }
+                }
+            }
+        }
+    }
+    if (result.isEmpty()) {
+        result.add("000000");
+    }
+    return result;
+}
+
+Set getFormatMain(Record record)
+{
+    Set result = new LinkedHashSet();
+    String leader = record.getLeader().toString();
+    char l6 = leader.charAt(6);
+    char l7 = leader.charAt(7);
+    Iterator field951Iter = record.getVariableFields("951").iterator();
+    Iterator field007Iter = record.getVariableFields("007").iterator();
+    Iterator field336Iter = record.getVariableFields("336").iterator();
+    Iterator field337Iter = record.getVariableFields("337").iterator();
+
+    switch (Character.toLowerCase(l6)) {
+    case 'a':
+        result.add("Text");
+        switch (Character.toLowerCase(l7)) {
+            case 'm':
+                result.add("Buch");
+                break;
+            case 'a':
+            case 'i':
+                while (field951Iter.hasNext()) {
+                    f951 = (DataField) field951Iter.next();
+                    f951C = f951.getSubfield('a');
+                    if (f951C != null) {
+                        f951V = f951C.getData().trim();
+                        if (f951V.equals("MC") || f951V.equals("MV") || f951V.equals("BO")) {
+                            result.add("Buch");
+                        }
+                        if (f951V.equals("JT") || f951V.equals("AI") || f951V.equals("AR") || f951V.equals("ST") || f951V.equals("JV")) {
+                            result.add("Zeitschrift/Artikel");
+                        }
+                    }
+                 }
+                 break;   
+             case 's':
+             case 'b':
+                 result.add("Zeitschrift/Artikel");
+                 break;
+         }
+         break;
+    case 'i':
+    case 'j':
+        result.add("Ton");
+        break;
+    case 'k':
+    case 'e':
+    case 'c':
+        result.add("Einzelbild");
+        result.add("Bild");
+        break;
+    case 'g':
+        result.add("Bewegte Bilder");
+        result.add("Bild");
+        break;
+    case 'o':
+        result.add("Sammlung");
+        break;
+    case 'r':
+        result.add("Physisches Objekt");
+        break;
+    case 't':
+        result.add("Text");
+        break;
+    case 'f':
+        result.add("Einzelbild");
+        result.add("Bild");
+        break;
+    }
+
+    while (field336Iter.hasNext()) {
+        f336 = (DataField) field336Iter.next();
+        f336b = f336.getSubfield('b');
+        if (f336b != null) {
+          if (f336b.getData().equals("txt")) {
+              result.add("Text");
+          }
+          if (f336b.getData().equals("cod")) {
+              result.add("Datensatz");
+          }
+          if (f336b.getData().equals("cop")) {
+              result.add("Software");
+          }
+        }
+    }
+
+   while (field337Iter.hasNext()) {
+        f337 = (DataField) field337Iter.next();
+        f337b = f337.getSubfield('b');
+        if (f337b != null) {
+          if (f337b.getData().equals("s")) {
+              result.add("Ton");
+          }
+        }
+    }
+
+
+    while (field007Iter.hasNext()) {
+        f007 = (ControlField) field007Iter.next();
+        char f0070 = f007.getData().toLowerCase().charAt(0);
+        switch (f0070) {
+            case 'g':
+            case 'k':
+                result.add("Einzelbild");
+                result.add("Bild");
+                break;
+            case 'v':
+            case 'm':
+                result.add("Bewegte Bilder");
+                result.add("Bild");
+                break;
+        }
+    }
+
+    if (result.isEmpty()) {
+        result.add("000000");
+    }
+
+    return result;
+}

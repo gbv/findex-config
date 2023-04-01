@@ -48,6 +48,53 @@ Set getGNDterms(Record record)
     return result;
 }
 
+Set getGNDtype(Record record, String idfirst)
+{
+    Set result = new LinkedHashSet();
+    Set gndIdsSet = getGNDLinks(record);
+    Iterator gndIds = gndIdsSet.iterator();
+    while (gndIds.hasNext()) {
+        String gndId = gndIds.next();
+        URL lobidURL = new URL("http://lobid.org/gnd/" + gndId + ".json");
+        URLConnection request = lobidURL.openConnection();
+        JsonParser jp = new JsonParser();
+        JsonElement root = new JsonObject();
+        try {
+            root = jp.parse(new InputStreamReader((InputStream) request.getContent()));
+        } catch(Exception e) {
+            continue;
+        }
+        JsonObject rootobj = root.getAsJsonObject();
+        if (rootobj.has("type")) {
+            if (rootobj.get("type").isJsonArray()) {
+                JsonArray variantNames = rootobj.getAsJsonArray("type");
+                if (variantNames != null) {
+                    Iterator NameIterator = variantNames.iterator();
+                    while (NameIterator.hasNext()) {
+                        JsonElement variantName = NameIterator.next();
+                        if (!variantName.getAsString().equals("AuthorityResource")) {
+                            if (idfirst.equals("last")) {
+                                result.add(variantName.getAsString() + "@" + "(DE-588)" + gndId);
+                            } else {
+                                result.add("(DE-588)" + gndId + "@" + variantName.getAsString());
+                            }
+                        }
+                    }
+                }
+            }
+            if (rootobj.get("type").isJsonPrimitive()) {
+                if (!rootobj.get("type").getAsString().equals("AuthorityResource")) {
+                if (idfirst.equals("last")) {
+                        result.add(rootobj.get("type").getAsString() + "@" + "(DE-588)" + gndId);
+                    } else {
+                        result.add("(DE-588)" + gndId + "@" +rootobj.get("type").getAsString());
+                    }
+                }
+            }
+        }
+    }
+    return result;
+}
 
 Set getGNDLinks(Record record)
     {

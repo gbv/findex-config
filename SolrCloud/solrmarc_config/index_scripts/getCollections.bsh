@@ -15,6 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.marc4j.marc.*;
 
+org.solrmarc.index.SolrIndexer indexer = null;
 
 private static final Pattern ILN_PATTERN = Pattern.compile("^GBV_ILN_(\\d{1,})");
 
@@ -38,10 +39,10 @@ public Set getCollections(Record record) {
             Matcher ILNmatcher = ILN_PATTERN.matcher(collcode);
             if (ILNmatcher.matches()) {
                 ilns.add(Integer.parseInt(ILNmatcher.group(1)));
-            } else {
-                if (collcode.startsWith("GBV_") && !collcode.startsWith("GBV_ILN_")) {
-                    result.add(collcode);
-                }
+//            } else {
+//                if (collcode.startsWith("GBV_") && !collcode.startsWith("GBV_ILN_")) {
+//                    result.add(collcode);
+//                } 
             }
         }
     }
@@ -56,6 +57,17 @@ public Set getCollections(Record record) {
     }
     if (result.isEmpty()) {
         result.add("GVK");
+    }
+    return result;
+}
+
+public Set getCollectionDetails(Record record)
+{
+    Set result = new LinkedHashSet();
+    result.addAll(indexer.getFieldList(record, "912a"));
+    Set f935 = indexer.getFieldList(record, "935a");
+    for (String coll : f935) {
+        result.add("BIBCOLL_" + coll.trim());
     }
     return result;
 }

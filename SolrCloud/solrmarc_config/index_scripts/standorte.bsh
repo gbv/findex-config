@@ -199,11 +199,11 @@ public Set getStandortILN(Record record){
 
              if (holdingField != null) {
                  if (holdingField.getSubfield('2') != null) {
-                     holding = holdingField.getSubfield('2').getData();
+                     iln = holdingField.getSubfield('2').getData();
                  }
-                 if (holdingField.getSubfield('f') != null) {
-                     cl = holdingField.getSubfield('f').getData();
-                     result.add(holding + ":" + cl);
+                 for (Subfield standort : holdingField.getSubfields('f')) {
+                     cl = standort.getData();
+                     result.add(iln + ":" + cl);
                  }
                  cl = "";
              }

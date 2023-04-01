@@ -400,8 +400,20 @@ public String getFormatVZG(Record record) {
                   fField = (ControlField) fieldsIter.next();
                   fCode = fField.getData().toUpperCase().charAt(0);
                   if (fCode == 'C') {
-                      return "Elektronische Bücher";
-                      break;
+                      Iterator field902Iter = field902.iterator();
+                      while (field902Iter.hasNext()) {
+                          fField = (DataField) field902Iter.next();
+                          if (fField.getSubfield('a') != null) {
+                              f951V = fField.getSubfield('a').getData();
+                              if (f951V.equals("JT") || f951V.equals("AI") || f951V.equals("AR") || f951V.equals("ST") || f951V.equals("JV")) {
+                                  return "Elektronische Zeitschriften";
+                                  break;
+                              } else {
+                                  return "Elektronische Bücher";
+                                  break;
+                              }
+                          }
+                      }
                   }
               }
           }
@@ -726,8 +738,20 @@ public String getFormatVZGEng(Record record) {
                   fField = (ControlField) fieldsIter.next();
                   fCode = fField.getData().toUpperCase().charAt(0);
                   if (fCode == 'C') {
-                      return "eBook";
-                      break;
+                      Iterator field902Iter = field902.iterator();
+                      while (field902Iter.hasNext()) {
+                          fField = (DataField) field902Iter.next();
+                          if (fField.getSubfield('a') != null) {
+                              f951V = fField.getSubfield('a').getData();
+                              if (f951V.equals("JT") || f951V.equals("AI") || f951V.equals("AR") || f951V.equals("ST") || f951V.equals("JV")) {
+                                  return "eJournal";
+                                  break;
+                              } else {
+                                  return "eBook";
+                                  break;
+                              }
+                          }
+                      }
                   }
               }
           }
@@ -981,12 +1005,14 @@ public String isOA(Record record)
     for (VariableField vf : list856)
     {
         DataField df = (DataField) vf;
-        String currentString = "";
-        for (Subfield current : df.getSubfields('z')) {
-            if (current.getData().trim().equals("OALizenz") || current.getData().trim().equals("Open Access-Lizenzbedingungen") || current.getData().trim().equals("OA") || current.getData().trim().startsWith("OpenAccess Lizenz") || current.getData().toLowerCase().trim().equals("kostenfrei")) {
-               return "true";
-            }
+        if (df.getIndicator1()=='4' && df.getIndicator2()=='0') {
+            String currentString = "";
+            for (Subfield current : df.getSubfields('z')) {
+                if (current.getData().trim().equals("OALizenz") || current.getData().trim().equals("Open Access-Lizenzbedingungen") || current.getData().trim().equals("OA") || current.getData().trim().startsWith("OpenAccess Lizenz") || current.getData().toLowerCase().trim().equals("kostenfrei")) {
+                    return "true";
+                }
          
+            }
         }
     }
 
@@ -1034,14 +1060,16 @@ public String isFreeBeer(Record record)
         for (VariableField vf : list856)
         {
             DataField df = (DataField) vf;
-            String currentString = "";
-            if (df.getSubfield('3') != null) {
-                if (df.getSubfield('3').getData().trim().equals("Volltext")) {
-                    for (Subfield current : df.getSubfields('z')) {
-                        if (current.getData().trim().equals("LF") || current.getData().trim().equals("KF") || current.getData().toLowerCase().trim().startsWith("kostenfrei")) {
-                           return "true";
-                        }
+            if (df.getIndicator1()=='4' && df.getIndicator2()=='0') {
+                String currentString = "";
+                if (df.getSubfield('3') != null) {
+                    if (df.getSubfield('3').getData().trim().equals("Volltext")) {
+                        for (Subfield current : df.getSubfields('z')) {
+                            if (current.getData().trim().equals("LF") || current.getData().trim().equals("KF") || current.getData().toLowerCase().trim().startsWith("kostenfrei")) {
+                               return "true";
+                            }
 
+                        }
                     }
                 }
             }
