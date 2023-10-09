@@ -39,6 +39,11 @@ public String matchkeyMaterialISBNYear(Record record) {
               if (!issn.isEmpty()) matchkey = material + ":" + issn + ":" + pubdate + ":" + enumeration + ":" + titlekey;
        }
        if (matchkey.isEmpty()) {
+          String titlekey = matchkeyTitlekey(record);
+          String authorkey = matchkeyAuthorkey(record);
+          if(!titlekey.isEmpty() && !authorkey.isEmpty()) matchkey = authorkey + ":" + pubdate + ":" + titlekey;
+       }
+       if (matchkey.isEmpty()) {
           matchkey = ((ControlField)record.getVariableField("001")).getData();
        }
        return matchkey;
@@ -120,4 +125,16 @@ public String matchkeyTitlekey(Record record) {
         }
     }
     return titlekey;
+}
+
+public String matchkeyAuthorkey(Record record) {
+    String authorkey = "";
+    String[] tags = {"100", "700"};
+    for (DataField authorfield : record.getVariableFields(tags)) {
+        if (authorfield.getSubfield('a') != null) {
+            authorkey = authorkey + authorfield.getSubfield('a').getData().replaceAll("[\\W]","").toLowerCase().trim();
+        }
+    }
+    authorkey = authorkey.substring(0, Math.min(authorkey.length(), 40));
+    return authorkey;
 }

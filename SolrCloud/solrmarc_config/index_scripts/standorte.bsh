@@ -2,8 +2,13 @@ import org.marc4j.marc.Record;
 import org.marc4j.marc.ControlField;
 import org.marc4j.marc.Subfield;
 import org.marc4j.marc.DataField;
+import org.solrmarc.tools.Utils;
+
+import org.apache.log4j.Logger;
+
 
 org.solrmarc.index.SolrIndexer indexer = null;
+protected static Logger logger = Logger.getLogger(Utils.class.getName());
 
 /**
  * Standort-Code aus Abrufzeichen in 954$y extrahieren
@@ -93,7 +98,7 @@ public Set getAusleihindikator(Record record) {
     return result;
 }
 
-public Set getSignaturILN(Record record){
+public Set getSignaturILN(Record record, String firstonly) {
     Set result = new LinkedHashSet();
     String location = "";
 
@@ -119,11 +124,75 @@ public Set getSignaturILN(Record record){
                          holding = holdingField.getSubfield('x').getData();
                          ilnsig = holding + ":" + location;
                          result.add(ilnsig);
-                     } 
+                     }
+                     if (firstonly.equals("true")) break;
                  }
              }
         }
     }
+    return result;
+}
+
+public Set getSigOrLoc(Record record, String which) {
+    Set result = new LinkedHashSet();
+    String iln = "";
+    
+    List holdings = record.getVariableFields("980");
+    for (DataField holdingField : holdings) {
+        iln = "";
+        if (holdingField.getSubfield('2') != null) {
+            iln = holdingField.getSubfield('2').getData();
+            List cs = holdingField.getSubfields('c');
+            List fs = holdingField.getSubfields('f');
+            List ds = holdingField.getSubfields('d');
+            if (cs.size().intValue() == ds.size().intValue() && cs.size().intValue() == fs.size().intValue()) {
+                for (int i = 0; i < cs.size(); i++) {
+                    if (which.equals("first_sig")) {
+                        if (i == 0 && !ds.get(i).getData().equals("--%%--")) {
+                            result.add(iln + ":" + ds.get(i).getData());
+                            if (holdingField.getSubfield('x') != null) {
+                                result.add(holdingField.getSubfield('x').getData() + ":" + ds.get(i).getData());
+                            }
+                        } 
+                    } else if (which.equals("first_loc")) {
+                        if (i == 0) {
+                            result.add(iln + ":" + fs.get(i).getData());
+                            if (holdingField.getSubfield('x') != null) {
+                                result.add(holdingField.getSubfield('x').getData() + ":" + fs.get(i).getData());
+                            }
+                        } 
+                    } else if (which.equals("other_sig")) {
+                        if (i != 0 && !ds.get(i).getData().equals("--%%--")) {
+                            result.add(iln + ":" + cs.get(i).getData() + "@" + ds.get(i).getData());
+                            if (holdingField.getSubfield('x') != null) {
+                                result.add(holdingField.getSubfield('x').getData() + ":" + cs.get(i).getData() + "@" + ds.get(i).getData());
+                            }
+                        }
+                    } else if (which.equals("other_loc")) {
+                        if (i != 0 && !fs.get(i).getData().equals("--%%--")) {
+                            result.add(iln + ":" + cs.get(i).getData() + "@" + fs.get(i).getData());
+                            if (holdingField.getSubfield('x') != null) {
+                                result.add(holdingField.getSubfield('x').getData() + ":" + cs.get(i).getData() + "@" + fs.get(i).getData());
+                            }
+                        }
+                    } else if (which.equals("all_loc")) {
+                        result.add(iln + ":" + fs.get(i).getData());
+                        if (holdingField.getSubfield('x') != null) {
+                            result.add(holdingField.getSubfield('x').getData() + ":" + fs.get(i).getData());
+                        }                         
+                    } else {
+                        result.add(iln + ":" + ds.get(i).getData());
+                        if (holdingField.getSubfield('x') != null) {
+                            result.add(holdingField.getSubfield('x').getData() + ":" + ds.get(i).getData());
+                        }
+                    }
+                }
+            } else {
+                logger.error(iln + ": number of $c $d $f does not match in 980, Cannot parse this 980.");
+            }
+        }
+    }
+    
     return result;
 }
 
@@ -140,9 +209,6 @@ public Set getClassILN(Record record){
              holdingField = (DataField) fieldsIter.next();
 
              if (holdingField != null) {
-                 if (holdingField.getSubfield('2') != null) {
-                     holding = holdingField.getSubfield('2').getData();
-                 }
                  if (holdingField.getSubfield('b') != null) {
                      cl = holdingField.getSubfield('b').getData();
                  }
@@ -182,6 +248,37 @@ public Set getClassILN(Record record){
         }
     }
 
+    return result;
+}
+
+public Set getClassNotationILN(Record record){
+    Set result = new LinkedHashSet();
+    String cl = "";
+
+    List holdings = record.getVariableFields("983");
+    Iterator fieldsIter = holdings.iterator();
+    if (holdings != null) {
+        DataField holdingField;
+        while(fieldsIter.hasNext()) {
+             String holding = "";
+             holdingField = (DataField) fieldsIter.next();
+
+             if (holdingField != null) {
+                 if (holdingField.getSubfield('a') != null) {
+                     cl = holdingField.getSubfield('a').getData();
+                 }
+                 if (holdingField.getSubfield('2') != null) {
+                     holding = holdingField.getSubfield('2').getData();
+                     result.add(holding + ":" + cl);
+                 }
+                 if (holdingField.getSubfield('x') != null) {
+                     sigel = holdingField.getSubfield('x').getData();
+                     result.add(sigel + ":" + cl);
+                 }
+                 cl = "";
+             }
+        }
+    }
     return result;
 }
 
