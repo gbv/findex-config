@@ -396,9 +396,7 @@
  <copyField source="fulltext" dest="fulltextGer"/>
  <copyField source="author_browse" dest="author_facet"/>
  <!-- CopyFields for Alphabetic Browse -->
- <copyField source="topic" dest="topic_browse"/>
- <copyField source="topic" dest="topic_browse_scis_mv"/>
- <copyField source="class_local_iln" dest="class_local_iln_scis_mv"/>
+ <copyField source="topic"    dest="topic_browse"/>
  <copyField source="author"    dest="authorSound"/>
  <copyField source="author2"    dest="authorSound"/>
  <!-- VZG -->
@@ -419,6 +417,7 @@
  <copyField source="GND_str_mv" dest="GND_txtF_mv"/>
  <copyField source="title_full" dest="title_whitespace"/>
  <copyField source="signature_iln" dest="signature_iln_scis_mv"/>
+ <copyField source="signature_weitere_iln_str_mv" dest="signature_weitere_iln_scis_mv"/>
  <copyField source="abrufzeichen_iln_str_mv" dest="abrufzeichen_iln_scis_mv"/>
  <!-- MARCXML only -->
  <copyField source="fullrecord_marcxml" dest="fullrecord"/>

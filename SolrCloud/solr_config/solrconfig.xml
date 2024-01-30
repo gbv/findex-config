@@ -17,7 +17,7 @@
 -->
 
 <config>
-  <luceneMatchVersion>7.2</luceneMatchVersion>
+  <luceneMatchVersion>9.0</luceneMatchVersion>
   <schemaFactory class="ClassicIndexSchemaFactory"/>
   <!-- Set this to 'false' if you want solr to continue working after it has 
        encountered an severe configuration error.  In a production environment, 
@@ -28,8 +28,15 @@
      -->
   <abortOnConfigurationError>${solr.abortOnConfigurationError:false}</abortOnConfigurationError>
 
+  <initParams path="*">
+	  <lst name="defaults">
+		  <str name="hl.method">original</str>
+	  </lst>
+  </initParams>
+
   <lib dir="${solr.install.dir:../../../..}/contrib/analysis-extras/lib" regex=".*\.jar" />
   <lib dir="${solr.install.dir:../../../..}/contrib/analysis-extras/lucene-libs" regex=".*\.jar" />
+  <lib dir="${solr.install.dir:../../../..}/modules/analysis-extras/lib" regex=".*\.jar" />
 
   <!-- Used to specify an alternate directory to hold all index data
        other than the default ./data under the Solr home.
@@ -113,7 +120,7 @@
     <!-- Maximum number of clauses in a boolean query... can affect
         range or prefix queries that expand to big boolean
         queries.  An exception is thrown if exceeded.  -->
-    <maxBooleanClauses>1024</maxBooleanClauses>
+    <maxBooleanClauses>8192</maxBooleanClauses>
 
     
     <!-- Cache used by SolrIndexSearcher for filters (DocSets),
@@ -131,7 +138,7 @@
            and old cache.
          -->
     <filterCache
-      class="solr.FastLRUCache"
+      class="solr.CaffeineCache"
       size="2000"
       initialSize="2000"
       autowarmCount="0"
@@ -141,7 +148,7 @@
          document ids (DocList) based on a query, a sort, and the range
          of documents requested.  -->
     <queryResultCache
-      class="solr.FastLRUCache"
+      class="solr.CaffeineCache"
       size="3000"
       initialSize="3000"
       autowarmCount="0"
@@ -150,7 +157,7 @@
   <!-- documentCache caches Lucene Document objects (the stored fields for each document).
        Since Lucene internal document ids are transient, this cache will not be autowarmed.  -->
     <documentCache
-      class="solr.LRUCache"
+      class="solr.CaffeineCache"
       size="20000"
       initialSize="20000"
       autowarmCount="0"/>
@@ -160,7 +167,7 @@
          even if not configured here. 
     --> 
      <fieldValueCache 
-        class="solr.FastLRUCache" 
+        class="solr.CaffeineCache" 
         size="500" 
         autowarmCount="10" 
         showItems="32"
