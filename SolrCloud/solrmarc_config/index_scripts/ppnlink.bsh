@@ -153,3 +153,29 @@ Set getNormLinksRole(Record record, String idfirst)
         return result;
     }
 
+Set getPPNLinkwithTag(Record record, String idfirst)
+    {
+
+        Set result = new LinkedHashSet();
+        List fields = record.getDataFields();
+
+        for (DataField field : fields)
+        {
+            List sf = field.getSubfields('w');
+            Iterator i = sf.iterator();
+            while (i.hasNext()) {
+                Subfield ppnlink = (Subfield)i.next();
+                String ppn = ppnlink.getData();
+                if (ppn.matches("\\(DE-627\\)(.*)")) {
+                    if (idfirst.equals("last")) {
+                       result.add("@@" + field.getTag() + "@@" + ppn);
+                    } else {
+                        result.add(ppn + "@@" + field.getTag() + "@@");
+                    }
+                }
+             }
+
+        }
+        return result;
+    }
+

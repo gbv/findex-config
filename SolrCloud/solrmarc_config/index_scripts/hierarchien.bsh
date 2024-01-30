@@ -26,6 +26,9 @@ public boolean isTopRecord(Record record) {
   if (Character.toUpperCase(leaderBit6) == 'O' && Character.toUpperCase(leaderBit7) == 'M' && Character.toUpperCase(leaderBit19) == 'A') {
     return true;
   }
+  if (Character.toUpperCase(leaderBit6) == 'C' && Character.toUpperCase(leaderBit7) == 'M' && Character.toUpperCase(leaderBit19) == 'A') {
+    return true;
+  }
 //  if (Character.toUpperCase(leaderBit6) == 'A' && Character.toUpperCase(leaderBit7) == 'B') {
 //    return true;
 //  }
@@ -36,9 +39,11 @@ public String get_hierarchy_top_data(Record record, String id_or_text) {
   if (isTopRecord(record) == true) {
       if (id_or_text.equals("text")) {
         DataField title = (DataField)record.getVariableField("245");
-        if (title.getSubfield('a') != null) {
-          String text = title.getSubfield('a').getData();
-          return text;
+        if (title != null) {
+            if (title.getSubfield('a') != null) {
+              String text = title.getSubfield('a').getData();
+              return text;
+            }
         }
       } else {
         String ppn = ((ControlField)record.getVariableField("001")).getData();

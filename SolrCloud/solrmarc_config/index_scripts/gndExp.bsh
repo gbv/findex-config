@@ -7,6 +7,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.*;
 
+org.solrmarc.index.SolrIndexer indexer = null;
+
 Set getGNDterms(Record record)
 {
     Set result = new LinkedHashSet();
@@ -45,6 +47,9 @@ Set getGNDterms(Record record)
            }
         }
     }
+    // in MARC 720 $a stehen Werte aus Pica 3090, die für eine zukünftige
+    // Aufnahme als Varianten in die GND vorgesehen sind
+    result.addAll(indexer.getFieldList(record, "720a"));
     return result;
 }
 
