@@ -23,9 +23,9 @@ Set getFormatDetails(Record record)
             }
         }
     }
-    if (result.isEmpty()) {
-        result.add("000000");
-    }
+//    if (result.isEmpty()) {
+//        result.add("000000");
+//    }
     return result;
 }
 
@@ -142,9 +142,9 @@ Set getFormatMain(Record record)
         }
     }
 
-    if (result.isEmpty()) {
-        result.add("000000");
-    }
+//    if (result.isEmpty()) {
+//        result.add("000000");
+//    }
 
     return result;
 }
