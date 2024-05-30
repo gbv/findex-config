@@ -91,24 +91,36 @@
     <fieldType name="textProper" class="solr.TextField" positionIncrementGap="100" termVectors="true">
       <analyzer type="index">
 	<tokenizer class="solr.ICUTokenizerFactory"/>
-        <filter class="solr.CJKWidthFilterFactory"/>
+	<filter class="solr.CJKWidthFilterFactory"/>
+	<!-- (DP) add two ICUTransforms-->
+        <filter class="solr.ICUTransformFilterFactory" id="Traditional-Simplified" />
+        <!-- TODO(DP) add custom filter for non traditional / simplified variants using unican property syntax-->
+        <filter class="solr.ICUTransformFilterFactory" id="Katakana-Hiragana" />
         <filter class="solr.StopFilterFactory"
             words="org/apache/lucene/analysis/cn/smart/stopwords.txt"/>
 	<filter class="solr.WordDelimiterGraphFilterFactory" splitOnNumerics="0" generateWordParts="1" generateNumberParts="0" catenateWords="1" catenateNumbers="1" catenateAll="0"/>
 	<filter class="solr.FlattenGraphFilterFactory"/>
-        <filter class="solr.ICUFoldingFilterFactory"/>
+	<filter class="solr.ICUFoldingFilterFactory"/>
+	<!-- (DP) add Bigram use default settings-->
+        <filter class="solr.CJKBigramFilterFactory"/>
 <!--        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt"/> -->
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
       </analyzer>
       <analyzer type="query">
         <tokenizer class="solr.ICUTokenizerFactory"/>
-        <filter class="solr.CJKWidthFilterFactory"/>
+	<filter class="solr.CJKWidthFilterFactory"/>
+	<!-- (DP) add two ICUTransforms-->
+        <filter class="solr.ICUTransformFilterFactory" id="Traditional-Simplified" />
+        <!-- TODO(DP) add custom filter for non traditional / simplified variants using unican property syntax-->
+        <filter class="solr.ICUTransformFilterFactory" id="Katakana-Hiragana" />
         <filter class="solr.StopFilterFactory"
             words="org/apache/lucene/analysis/cn/smart/stopwords.txt"/>
 	<filter class="solr.WordDelimiterGraphFilterFactory" splitOnNumerics="0" generateWordParts="1" generateNumberParts="0" catenateWords="1" catenateNumbers="1" catenateAll="0"/>
         <filter class="solr.ICUFoldingFilterFactory"/>
 <!--        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt"/> -->
-        <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+        <!-- (DP) add Bigram use default settings-->
+        <filter class="solr.CJKBigramFilterFactory"/>
+	<filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
       </analyzer>
     </fieldType>
     <!-- Basic Text Field for use with Spell Correction -->
