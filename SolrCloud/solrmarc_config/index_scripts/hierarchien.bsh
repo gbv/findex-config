@@ -17,21 +17,27 @@ public boolean isTopRecord(Record record) {
   leaderBit6 = leader.charAt(6);
   leaderBit7 = leader.charAt(7);
   leaderBit19 = leader.charAt(19);
-  if (Character.toUpperCase(leaderBit6) == 'A' && Character.toUpperCase(leaderBit7) == 'M' && Character.toUpperCase(leaderBit19) == 'A') {
+
+  // Wenn leader Pos. 19 == a, dann generell "top"
+  if (Character.toUpperCase(leaderBit19) == 'A') {
     return true;
   }
+  // aussserdem: Zeitschriften haben Leader Pos 6/7 == as
   if (Character.toUpperCase(leaderBit6) == 'A' && Character.toUpperCase(leaderBit7) == 'S') {
     return true;
   }
-  if (Character.toUpperCase(leaderBit6) == 'O' && Character.toUpperCase(leaderBit7) == 'M' && Character.toUpperCase(leaderBit19) == 'A') {
-    return true;
-  }
-  if (Character.toUpperCase(leaderBit6) == 'C' && Character.toUpperCase(leaderBit7) == 'M' && Character.toUpperCase(leaderBit19) == 'A') {
-    return true;
-  }
-  if (Character.toUpperCase(leaderBit6) == 'E' && Character.toUpperCase(leaderBit7) == 'M' && Character.toUpperCase(leaderBit19) == 'A') {
-    return true;
-  }
+//  if (Character.toUpperCase(leaderBit6) == 'A' && Character.toUpperCase(leaderBit7) == 'M' && Character.toUpperCase(leaderBit19) == 'A') {
+//    return true;
+//  }
+//  if (Character.toUpperCase(leaderBit6) == 'O' && Character.toUpperCase(leaderBit7) == 'M' && Character.toUpperCase(leaderBit19) == 'A') {
+//    return true;
+//  }
+//  if (Character.toUpperCase(leaderBit6) == 'C' && Character.toUpperCase(leaderBit7) == 'M' && Character.toUpperCase(leaderBit19) == 'A') {
+//    return true;
+//  }
+//  if (Character.toUpperCase(leaderBit6) == 'E' && Character.toUpperCase(leaderBit7) == 'M' && Character.toUpperCase(leaderBit19) == 'A') {
+//    return true;
+//  }
 //  if (Character.toUpperCase(leaderBit6) == 'A' && Character.toUpperCase(leaderBit7) == 'B') {
 //    return true;
 //  }

@@ -145,7 +145,7 @@ public String getDate(Record record)
         String date = fixedField.getData().substring(7,11);
         if (date.matches("\\d\\d\\d\\d")) {
             int num = Integer.parseInt(date);
-            if (num < 2050 && num > 1000) return date;
+            if (num < 2050 && num > 750) return date;
         }
     }
     return (null);

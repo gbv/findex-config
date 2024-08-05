@@ -282,6 +282,37 @@ public Set getClassNotationILN(Record record){
     return result;
 }
 
+public Set getClassNameILN(Record record){
+    Set result = new LinkedHashSet();
+    String cl = "";
+
+    List holdings = record.getVariableFields("983");
+    Iterator fieldsIter = holdings.iterator();
+    if (holdings != null) {
+        DataField holdingField;
+        while(fieldsIter.hasNext()) {
+             String holding = "";
+             holdingField = (DataField) fieldsIter.next();
+
+             if (holdingField != null) {
+                 if (holdingField.getSubfield('b') != null) {
+                     cl = holdingField.getSubfield('b').getData();
+                 }
+                 if (holdingField.getSubfield('2') != null) {
+                     holding = holdingField.getSubfield('2').getData();
+                     result.add(holding + ":" + cl);
+                 }
+                 if (holdingField.getSubfield('x') != null) {
+                     sigel = holdingField.getSubfield('x').getData();
+                     result.add(sigel + ":" + cl);
+                 }
+                 cl = "";
+             }
+        }
+    }
+    return result;
+}
+
 public Set getStandortILN(Record record){
     Set result = new LinkedHashSet();
     String cl = "";
