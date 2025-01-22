@@ -26,6 +26,11 @@ public boolean isTopRecord(Record record) {
   if (Character.toUpperCase(leaderBit6) == 'A' && Character.toUpperCase(leaderBit7) == 'S') {
     return true;
   }
+  // auch bei "Notated music" als Reihe: Wenn in Pica als "monographische Reihe" erfasst -> in Marc: Leader Pos 6/7 == cs
+  if (Character.toUpperCase(leaderBit6) == 'C' && Character.toUpperCase(leaderBit7) == 'S') {
+    return true;
+  }
+
 //  if (Character.toUpperCase(leaderBit6) == 'A' && Character.toUpperCase(leaderBit7) == 'M' && Character.toUpperCase(leaderBit19) == 'A') {
 //    return true;
 //  }
@@ -63,6 +68,9 @@ public String get_hierarchy_top_data(Record record, String id_or_text) {
 }
 
 public Set get_hierarchy_data(Record record, String id_or_text) {
+  String leader = record.getLeader().toString();
+  leaderBit19 = leader.charAt(19);
+
   Set result = new LinkedHashSet(); 
   if (isTopRecord(record) == true) {
       result.add(get_hierarchy_top_data(record, id_or_text));
@@ -78,8 +86,18 @@ public Set get_hierarchy_data(Record record, String id_or_text) {
           link = (DataField) fieldsIter.next();
           if (id_or_text.equals("text")) {
               if (link.getSubfield('t') != null) {
-              String text = link.getSubfield('t').getData();
-              result.add(text);
+                  String text = link.getSubfield('t').getData();
+                  result.add(text);
+              } else {
+                  // bei "MTM": Übergeordneter Titel steht in 245 $a
+                  if (Character.toUpperCase(leaderBit19) == 'C') {
+                     titlefield = record.getVariableField("245");
+                     if (titlefield != null) {
+                         if (titlefield.getSubfield('a') != null) {
+                             result.add(titlefield.getSubfield('a').getData());
+                         }
+                     }
+                  }
               }
           } else {
               if(link.getSubfield('w') != null) {

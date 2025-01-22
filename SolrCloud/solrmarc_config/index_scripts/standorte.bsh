@@ -537,7 +537,7 @@ public Set getProvIsil(Record record) {
     Set result = new LinkedHashSet();
     String prov = "";
     String isil = "";
-    Iterator fieldsIter = record.getVariableFields("561").iterator();
+    Iterator fieldsIter = record.getVariableFields("361").iterator();
     while(fieldsIter.hasNext()) {
         isil = "";
         prov = "";
