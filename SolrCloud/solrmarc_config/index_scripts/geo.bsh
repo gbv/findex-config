@@ -24,8 +24,8 @@ import com.google.gson.*;
 org.solrmarc.index.SolrIndexer indexer = null;
 
 // private static final Pattern BOX_PATTERN = Pattern.compile("\\((.+)--(.+)\\/(.+)--(.+)\\)\\.");
-private static final Pattern BOX_PATTERN = Pattern.compile("(.+)-(.+)\\/(.+)-(.+)");
-private static final Pattern COORDINATES_PATTERN = Pattern.compile("^([eEwWnNsS]) (\\d{3}) (\\d{2})");
+private static final Pattern BOX_PATTERN = Pattern.compile("(.+)-(.+)/(.+)-(.+)");
+private static final Pattern COORDINATES_PATTERN = Pattern.compile("^([eEwWnNsS]) (\\d{3})°(\\d{2})'");
 
 Set getAllCoordinates(Record record) {
     Set result = new LinkedHashSet();
