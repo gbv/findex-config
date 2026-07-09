@@ -9,13 +9,12 @@ import org.solrmarc.index.SolrIndexer;
 import org.solrmarc.tools.Utils;
 
 
-source("/home/solr/solrmarc/index_scripts/format.bsh");
-source("/home/solr/solrmarc/index_scripts/isbn.bsh");
-source("/home/solr/solrmarc/index_scripts/getdate.bsh");
+source("/home/solr/solr/solrmarc/index_scripts/format.bsh");
+source("/home/solr/solr/solrmarc/index_scripts/isbn.bsh");
+source("/home/solr/solr/solrmarc/index_scripts/getdate.bsh");
 
 public String matchkeyMaterialISBNYear(Record record) {
       String material = getFormatVZGEng(record);
-      String isbn = matchkeyISBN(record);
       // TODO: for serials, journals... get start and end year
       String pubdate = matchkeygetDate(record);
       String matchkey = "";
@@ -24,19 +23,20 @@ public String matchkeyMaterialISBNYear(Record record) {
           case "eBook":
               material = "book";
               String isbn = matchkeyISBN(record);
-              if (!isbn.isEmpty()) matchkey = material + ":" + isbn + ":" + pubdate;
+              if (!isbn.isEmpty()) matchkey = material + ":" + isbn;
          case "Journal":
          case "eJournal":
               material = "journal";
               String issn = matchkeyISSN(record);
-              if (!issn.isEmpty()) matchkey = material + ":" + issn + ":" + pubdate;
+              if (!issn.isEmpty()) matchkey = material + ":" + issn;
          case "Article":
          case "electronic Article":
               material = "article";
               String issn = matchkeyISSN(record);
               String enumeration = matchkeyEnum(record);
               String titlekey = matchkeyTitlekey(record);
-              if (!issn.isEmpty()) matchkey = material + ":" + issn + ":" + pubdate + ":" + enumeration + ":" + titlekey;
+              String spage = getStartpage(record);
+              if (!issn.isEmpty()) matchkey = material + ":" + issn + ":" + pubdate + ":" + enumeration + ":" + titlekey + ":" + spage;
        }
        if (matchkey.isEmpty()) {
           String titlekey = matchkeyTitlekey(record);
@@ -51,12 +51,17 @@ public String matchkeyMaterialISBNYear(Record record) {
 
 public String matchkeyISBN(Record record) {
       Set isbns = getISBN1013(record);
+      String bestIsbn = "";
       Iterator i = isbns.iterator();
       while (i.hasNext()) {
           isbn = i.next();
-          if (isbn.length() == 13) return isbn;
+          if (isbn.length() == 13) {
+              if (bestIsbn.equals("") || isbn.compareTo(bestIsbn) < 0) {
+                  bestIsbn = isbn;
+              }
+          }
       }
-      return "";
+      return bestIsbn;
    }
 
 public String matchkeyISSN(Record record) {

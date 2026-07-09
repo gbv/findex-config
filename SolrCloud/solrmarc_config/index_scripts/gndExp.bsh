@@ -18,6 +18,7 @@ Set getGNDterms(Record record)
         String gndId = gndIds.next();
         URL lobidURL = new URL("http://lobid.org/gnd/" + gndId + ".json");
         URLConnection request = lobidURL.openConnection();
+        request.setRequestProperty("User-Agent", "findex.gbv.de GND harvester; mailto:kinstler@gbv.de");
         JsonParser jp = new JsonParser();
         JsonElement root = new JsonObject();
         try {

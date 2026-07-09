@@ -556,6 +556,29 @@ public Set getProvIsil(Record record) {
 
 }
 
+public Set getProvIdIsil(Record record) {
+    Set result = new LinkedHashSet();
+    String prov = "";
+    String isil = "";
+    for (provField : record.getVariableFields("361")) {;
+        isil = "";
+        if (provField.getSubfield('5') != null) {
+            isil = provField.getSubfield('5').getData();
+        } else {
+            isil = "##noisil##";
+        }
+        for (ids :  provField.getSubfields('0')) {
+            result.add(isil + "@" + ids.getData());
+        }
+	for (ids :  provField.getSubfields('u')) {
+	    result.add(isil + "@" + ids.getData()); 
+	}
+    }
+    return result;
+
+}
+
+
 public Set getSelectkeyBib(Record record){
     Set result = new LinkedHashSet();
     String location = "";

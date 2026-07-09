@@ -25,7 +25,7 @@ org.solrmarc.index.SolrIndexer indexer = null;
 
 // private static final Pattern BOX_PATTERN = Pattern.compile("\\((.+)--(.+)\\/(.+)--(.+)\\)\\.");
 private static final Pattern BOX_PATTERN = Pattern.compile("(.+)-(.+)/(.+)-(.+)");
-private static final Pattern COORDINATES_PATTERN = Pattern.compile("^([eEwWnNsS]) (\\d{3})°(\\d{2})'");
+private static final Pattern COORDINATES_PATTERN = Pattern.compile("^([eEwWnNsS]) (\\d{3})°(\\d{2})'.*");
 
 Set getAllCoordinates(Record record) {
     Set result = new LinkedHashSet();
@@ -84,7 +84,9 @@ Set getAllCoordinates(Record record) {
                                     while (wktarrIter.hasNext()) {
                                         JsonElement wkt = wktarrIter.next();
                                         String coord = wkt.getAsString();
-                                        result.add(coord);
+                                        if (!coord.matches("Polygon.*\\+008\\.705555 \\+053\\.893333.*")) {
+                                            result.add(coord);
+                                        }
                                     }
                                 }
                             }

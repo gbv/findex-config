@@ -149,6 +149,26 @@ public Set get_hierarchy_data(Record record, String id_or_text) {
        }
     }
 
+    fields = record.getVariableFields("811");
+    if (fields != null) {
+      fieldsIter = fields.iterator();
+      while(fieldsIter.hasNext()) {
+          link = (DataField) fieldsIter.next();
+          if (id_or_text.equals("text")) {
+              if (link.getSubfield('t') != null) {
+              String text = link.getSubfield('t').getData();
+              result.add(text);
+              }
+          } else {
+              if(link.getSubfield('w') != null) {
+              String id = link.getSubfield('w').getData();
+              id = id.toUpperCase().replaceAll("\\(DE-\\d{3}\\)", "");
+              result.add(id);
+              }
+          }
+       }
+    }
+
     fields = record.getVariableFields("830");
     if (fields != null) {
       fieldsIter = fields.iterator();
